@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141317">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Away</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{ width:100%; height:100%; background:#141317; overflow:hidden; }
+  body{ position:fixed; inset:0; }
+  #gl{ position:absolute; inset:0; display:block; width:100vw; height:100dvh; z-index:0; }
+  #trail{ position:absolute; inset:0; display:block; width:100vw; height:100dvh; z-index:1; pointer-events:none; filter:blur(3px); }
+
+  .stage{ position:absolute; inset:0; z-index:2; visibility:hidden; }
+  #plane{
+    position:absolute; top:0; left:0;
+    width:74px; height:auto;
+    filter:drop-shadow(0 8px 22px rgba(0,0,0,.5));
+    will-change:transform,opacity;
+    opacity:0;
+  }
+  #plane svg{ display:block; width:100%; height:auto; }
+</style>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <canvas id="trail"></canvas>
+
+  <div class="stage" id="stage">
+    <div id="plane">
+      <svg viewBox="0 0 101 107" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M82.2905 11.3135C82.6246 11.268 82.9641 11.2678 83.2993 11.3193C83.3006 11.3195 83.3019 11.3192 83.3032 11.3193L83.3491 11.3232L83.3931 11.332C83.7354 11.3744 84.1015 11.4592 84.4438 11.6309L84.6021 11.7168L84.6294 11.7344L85.2065 12.1006L85.27 12.1406L85.3267 12.1885L85.8823 12.6514L85.9429 12.6855L86.0571 12.8018C86.2645 13.0125 86.422 13.2874 86.5298 13.4922C86.6522 13.7249 86.7755 13.9967 86.894 14.2793C87.1318 14.8461 87.378 15.5223 87.5981 16.1602C87.8194 16.8012 88.0193 17.4192 88.1636 17.876C88.2358 18.1047 88.2948 18.2945 88.3354 18.4268C88.3557 18.4927 88.3715 18.5445 88.3823 18.5801C88.3877 18.5979 88.3922 18.6116 88.395 18.6211C88.3964 18.6256 88.3972 18.6293 88.3979 18.6318C88.3983 18.6329 88.3987 18.6341 88.3989 18.6348L88.3989 18.6357L88.3989 18.6367L88.4097 18.6709L88.4175 18.7051L90.813 28.9678C91.1354 29.9367 91.2984 30.6402 91.3296 31.2373C91.3635 31.8874 91.2358 32.344 91.1343 32.7197C91.1329 32.725 91.1308 32.7301 91.1294 32.7353L91.1304 32.7363C91.1187 32.7796 91.1072 32.8214 91.0962 32.8633L91.0884 32.8935L91.0786 32.9238L87.3237 44.5518L88.7241 45.5586C89.7294 45.9556 90.3366 46.8229 90.5093 47.8125C90.7934 48.3414 91.0178 48.9266 91.2124 49.4307C91.3658 49.828 91.5051 50.1892 91.6558 50.5176L91.811 50.835L91.8452 50.9004L91.8706 50.9697C92.8663 53.6747 93.401 55.5547 93.6313 56.9199C93.8618 58.286 93.8015 59.2223 93.5249 59.9893L93.5259 59.9902L83.8726 87.5078L83.8706 87.5156L83.8677 87.5225C83.5027 88.521 82.82 89.3733 82.0151 89.9629C81.2179 90.5469 80.2101 90.9361 79.1753 90.8516L79.1753 90.8506L69.4106 90.0654C67.902 89.9438 66.5588 89.0629 65.8462 87.7275L62.5718 81.5908L62.5708 81.5879L62.4595 81.3779C61.8469 80.2225 61.2584 79.1188 60.9087 78.1084C60.5527 77.0797 60.3823 75.9822 60.7837 74.8838L60.8013 74.8359L60.8228 74.79L61.1851 74.0185L63.2065 68.8086L33.104 103.657C31.9747 104.981 30.103 105.835 28.4683 105.2L14.9956 100.362C13.007 99.6519 12.4561 97.9764 12.312 97.1279L12.3081 97.1045L12.3052 97.0801L10.5151 82.9834L10.5161 82.9824C10.3136 81.678 10.8589 80.2968 11.77 79.2832L11.7759 79.2764L36.0308 52.7012L24.4116 59.1728L24.3335 59.2168L24.2495 59.248C23.2653 59.6097 22.2778 59.4909 21.4907 59.1611C20.7561 58.8533 20.0822 58.3117 19.7163 57.6289L16.1938 52.0977C15.5125 51.028 15.0147 49.8512 14.7222 48.6172L13.1226 41.8691L13.1138 41.8311L13.1069 41.791C13.0586 41.4978 12.9973 41.2066 12.9302 40.8926C12.69 39.7679 12.2713 38.1017 13.4009 36.6143C13.9304 35.6956 14.7752 34.872 15.8374 34.4102L38.1675 24.1094L38.1938 24.0967L38.2212 24.0859C39.3188 23.6469 40.4841 23.2904 41.8979 23.2314C43.3064 23.1728 44.8908 23.4117 46.8433 24.0625L46.8511 24.0654L46.8579 24.0674L51.0981 25.5459C51.3578 25.5862 51.7426 25.5347 52.1841 25.2871L52.2114 25.2725L52.2388 25.2588L77.9507 12.5781C78.8713 12.0764 80.7201 11.4307 82.2905 11.3135Z" stroke="url(#pa0)" stroke-width="2.2927"></path><path d="M80.5464 13.3945C81.7812 12.2623 83.3904 12.0975 84.1978 13.0205L85.2397 13.6064C85.8911 14.2692 87.3013 18.9658 87.3013 18.9658L90.2544 29.2734C90.9463 31.3345 90.7518 31.747 90.5347 32.5713L85.7866 46.9746L88.0981 46.9746C89.5822 46.9747 89.5748 48.3739 90.1421 49.8437C90.3419 50.3614 90.5454 50.8881 90.7944 51.3652C92.7674 56.7251 92.8219 58.5767 92.4438 59.6113L82.7905 87.1289C82.2285 88.6669 80.6514 89.822 79.2681 89.709L69.5024 88.9228C68.3828 88.8327 67.3857 88.1785 66.8569 87.1875L63.5825 81.0508L63.4722 80.8418C62.2186 78.4774 61.314 76.7716 61.8599 75.2773L68.7476 60.6084L32.2319 103.462C31.2774 104.581 29.8741 105.083 28.855 104.67L15.1802 99.7285C14.6071 99.4962 13.751 98.9124 13.4448 97.5859L11.104 83.9346C10.9529 83.0444 11.3232 81.9805 12.0747 81.1445L41.6216 48.2764L24.2456 58.0352C22.7775 58.7686 21.2735 58.1718 20.7026 57.0439L17.1372 52.0537C16.1823 50.7172 15.5063 49.2019 15.1489 47.5986L13.6909 41.0576C13.6375 40.7331 13.5697 40.4158 13.5034 40.1055C13.0644 38.0502 12.6915 36.3059 16.9917 34.873L45.1274 31.5674C45.4311 31.4157 45.7328 31.3177 46.022 31.2686C45.9364 31.1753 45.8783 31.0662 45.853 30.9404L46.2642 31.2383C46.8697 31.1924 47.4077 31.3708 47.7817 31.7402C49.1305 31.7446 50.8306 31.361 51.6724 30.9404L53.5698 34.9844L61.8237 25.8027C63.2479 24.2185 65.3814 24.099 66.0444 25.5664L66.2329 25.9834L80.5464 13.3945Z" fill="url(#pa1)"></path><path d="M82.7725 11.2939C83.277 11.2935 83.8581 11.3575 84.3789 11.6016L84.5986 11.7178L84.6123 11.7256L84.626 11.7344L85.2031 12.1006L85.2666 12.1406L85.3232 12.1885L85.9678 12.7266L86.0371 12.7842L86.0967 12.8516C86.6275 13.4585 86.7245 14.2517 86.709 14.8467C86.6928 15.4685 86.547 16.1083 86.3516 16.6543L86.3525 16.6553L79.3281 37.6514L79.3232 37.665L79.3184 37.6797C79.1492 38.1457 79.1728 38.5031 79.25 38.7187C79.3197 38.9133 79.4405 39.0313 79.627 39.0908L79.79 39.1426L79.9307 39.2402L87.832 44.707L87.8311 44.707C89.3103 45.654 89.7725 47.0926 89.7998 48.375C89.8262 49.6128 89.4585 50.7918 89.2012 51.499L89.2021 51.5L80.3516 77.0742L80.3486 77.084L80.3447 77.0928C79.9798 78.0915 79.2971 78.9446 78.4922 79.5342C77.6949 80.1181 76.6871 80.5074 75.6523 80.4228L63.3154 79.415C62.2169 79.3252 61.3357 78.7132 60.8896 77.7803C60.4596 76.8806 60.4878 75.8076 60.8789 74.7998L71.083 48.5068C71.2978 47.9533 71.2419 47.5547 71.1416 47.3447C71.0573 47.1683 70.9052 47.0311 70.5967 47.0059L65.1514 46.5615L29.583 88.5801L29.5732 88.5918L29.5625 88.6035C28.4374 89.8614 26.636 90.6545 25.0479 90.0635L25.0254 90.0557L25.0029 90.0459L12.7764 84.8955L12.7764 84.8945C11.5507 84.4162 10.9661 83.2953 10.9268 82.1582C10.888 81.033 11.3572 79.8394 12.2256 78.875L12.2275 78.8721L49.3965 37.8857L48.4434 36.2422C48.3284 36.0441 47.8982 35.7236 47.0186 36.1631L22.7197 48.9141L22.71 48.9199L22.6992 48.9248C21.1837 49.6818 19.2242 49.5665 18.2822 47.9678L13.2334 41.1191L13.1885 41.0586L13.1514 40.9922C12.5273 39.8601 12.7192 38.5373 13.2188 37.501C13.722 36.4571 14.624 35.4994 15.79 34.9785L38.1426 24.1201L38.1797 24.1016L38.2178 24.0869C39.3396 23.6382 40.4673 23.3346 41.8398 23.334C43.1928 23.3334 44.7139 23.627 46.6357 24.2676L51.0908 25.75C51.3505 25.7915 51.737 25.741 52.1807 25.4922L52.2041 25.4785L52.2285 25.4668L77.9404 12.582C78.6285 12.2056 79.7888 11.7717 80.9395 11.5186C81.5348 11.3876 82.1715 11.2945 82.7725 11.2939Z" fill="white" stroke="url(#pa2)" stroke-width="2.2927"></path><defs><lineargradient id="pa0" x1="41.7682" y1="26.4453" x2="67.8596" y2="67.6577" gradientUnits="userSpaceOnUse"><stop stop-color="#6C5CD1"></stop><stop offset="1" stop-color="#151515"></stop></lineargradient><lineargradient id="pa1" x1="34.9039" y1="24.574" x2="63.7109" y2="72.4016" gradientUnits="userSpaceOnUse"><stop stop-color="#7665E7"></stop><stop offset="1" stop-color="#141317"></stop></lineargradient><lineargradient id="pa2" x1="46.3974" y1="29.2271" x2="70.2313" y2="69.14" gradientUnits="userSpaceOnUse"><stop stop-color="#6C5DD3"></stop><stop offset="1" stop-color="#151515"></stop></lineargradient></defs></svg>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ---------- background shader ---------- */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setClearColor(0x141317, 1);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+const uniforms = { uTime:{value:0}, uRes:{value:new THREE.Vector2(1,1)} };
+
+const material = new THREE.ShaderMaterial({
+  uniforms,
+  vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.0); }`,
+  fragmentShader:`
+    precision highp float;
+    varying vec2 vUv; uniform float uTime; uniform vec2 uRes;
+    vec3 permute(vec3 x){ return mod(((x*34.0)+1.0)*x,289.0); }
+    float snoise(vec2 v){
+      const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+      vec2 i=floor(v+dot(v,C.yy)); vec2 x0=v-i+dot(i,C.xx);
+      vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);
+      vec4 x12=x0.xyxy+C.xxzz; x12.xy-=i1; i=mod(i,289.0);
+      vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));
+      vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);
+      m=m*m; m=m*m; vec3 x=2.0*fract(p*C.www)-1.0; vec3 h=abs(x)-0.5;
+      vec3 ox=floor(x+0.5); vec3 a0=x-ox;
+      m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+      vec3 g; g.x=a0.x*x0.x+h.x*x0.y; g.yz=a0.yz*x12.xz+h.yz*x12.yw;
+      return 130.0*dot(m,g);
+    }
+    float fbm(vec2 x){ float v=0.0,a=0.5; for(int i=0;i<5;i++){ v+=a*snoise(x); x=x*2.02+7.3; a*=0.5;} return v*0.5+0.5; }
+    float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    const vec3 INK0=vec3(0.078,0.075,0.090);
+    const vec3 INK1=vec3(0.082,0.082,0.082);
+    const vec3 PURPLE=vec3(0.463,0.396,0.906);
+    const vec3 PDEEP=vec3(0.424,0.361,0.820);
+    const vec3 LAV=vec3(0.584,0.522,0.941);
+    void main(){
+      vec2 uv=vUv; vec2 asp=vec2(uRes.x/uRes.y,1.0); vec2 p=(uv-0.5)*asp;
+      float t=uTime*0.05;
+      vec2 q=vec2(fbm(p*1.25+vec2(0.0,t*0.35)), fbm(p*1.25+vec2(4.2,1.3)-t*0.30));
+      float warp=fbm(p*1.5+q*0.9+t*0.20);
+      vec2 c1=vec2(sin(t*0.55)*0.18, 0.34+cos(t*0.40)*0.10);
+      vec2 c2=vec2(-0.20+cos(t*0.36)*0.15, 0.02+sin(t*0.48)*0.12);
+      float g1=smoothstep(0.56,0.0,length(p-c1));
+      float g2=smoothstep(0.48,0.0,length(p-c2));
+      g1=pow(g1,1.7)*(0.45+0.55*warp);
+      g2=pow(g2,1.9)*(0.40+0.60*(1.0-warp));
+      vec3 col=mix(INK0,INK1,smoothstep(0.0,1.0,uv.y));
+      col=mix(col,PDEEP,clamp(g2,0.0,1.0)*0.30);
+      col=mix(col,PURPLE,clamp(g1,0.0,1.0)*0.42);
+      float core=smoothstep(0.22,0.0,length(p-c1));
+      col+=LAV*core*(0.05+0.03*warp);
+      float vig=smoothstep(0.98,0.16,length((uv-0.5)*asp*1.15));
+      col*=mix(0.34,1.0,vig);
+      col*=mix(0.62,1.0,smoothstep(-0.05,0.55,uv.y));
+      col+=(hash(uv*uRes+t)-0.5)*0.026;
+      gl_FragColor=vec4(col,1.0);
+    }`
+});
+scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
+
+function resize(){
+  const dpr=Math.min(window.devicePixelRatio,2);
+  const w=window.innerWidth, h=window.innerHeight;
+  renderer.setPixelRatio(dpr); renderer.setSize(w,h,false);
+  uniforms.uRes.value.set(w*dpr, h*dpr);
+}
+window.addEventListener('resize', resize); resize();
+
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const start = performance.now();
+renderer.setAnimationLoop(()=>{
+  uniforms.uTime.value = reduce ? 8.0 : (performance.now()-start)/1000;
+  renderer.render(scene, camera);
+});
+
+/* ---------- full flight: glide in from bottom-left -> one clean loop -> glide out top-right ----------
+   Driven by ONE linear tween. Position, rotation, scale and opacity are all derived from a single
+   parametric path (straight -> exact tangent circle -> straight), so velocity is continuous
+   everywhere (no jerk) and the speed is shaped by an arc-length profile we control directly. */
+const gsap  = window.gsap;
+const stage = document.getElementById('stage');
+const plane = document.getElementById('plane');
+const jumpToEnd = location.search.indexOf('end') > -1;
+
+// --- vapour contrail on a 2D layer between the aurora and the plane ---
+const tcanvas = document.getElementById('trail');
+const tctx = tcanvas.getContext('2d');
+let tdpr = Math.min(window.devicePixelRatio, 2);
+function sizeTrail(){
+  tdpr = Math.min(window.devicePixelRatio, 2);
+  tcanvas.width  = Math.round(window.innerWidth  * tdpr);
+  tcanvas.height = Math.round(window.innerHeight * tdpr);
+}
+sizeTrail();
+window.addEventListener('resize', sizeTrail);
+const trail = [];
+const TRAIL_SPAN = 0.20;                 // trail lifetime in progress units (~0.7s of soft wake)
+function drawTrail(curU){
+  tctx.setTransform(1,0,0,1,0,0);
+  tctx.clearRect(0,0,tcanvas.width,tcanvas.height);
+  if (trail.length < 2) return;
+  tctx.scale(tdpr, tdpr);
+  tctx.globalCompositeOperation='lighter';   // additive: overlapping puffs melt into a smooth glow
+
+  // soft vapour body — each point is a radial puff that blooms outward as it ages, like dispersing smoke
+  for (let i=0;i<trail.length;i++){
+    const b=trail[i];
+    const life=1-(curU-b.u)/TRAIL_SPAN; if(life<=0||b.op<=0) continue;
+    const age=1-life;
+    const R=9 + 46*age + 9*life;              // tight at the plane, billows wide behind
+    const a=0.10*Math.pow(life,1.25)*b.op;
+    const g=tctx.createRadialGradient(b.x,b.y,0, b.x,b.y,R);
+    g.addColorStop(0.0,`rgba(150,135,240,${a})`);
+    g.addColorStop(0.45,`rgba(150,135,240,${a*0.40})`);
+    g.addColorStop(1.0,'rgba(150,135,240,0)');
+    tctx.fillStyle=g; tctx.beginPath(); tctx.arc(b.x,b.y,R,0,6.2832); tctx.fill();
+  }
+  // warm inner glow, tighter and brighter, hugging the recent path
+  for (let i=0;i<trail.length;i++){
+    const b=trail[i];
+    const life=1-(curU-b.u)/TRAIL_SPAN; if(life<=0||b.op<=0) continue;
+    const R=5 + 16*life;
+    const a=0.22*Math.pow(life,2.2)*b.op;
+    const g=tctx.createRadialGradient(b.x,b.y,0, b.x,b.y,R);
+    g.addColorStop(0.0,`rgba(200,190,255,${a})`);
+    g.addColorStop(1.0,'rgba(200,190,255,0)');
+    tctx.fillStyle=g; tctx.beginPath(); tctx.arc(b.x,b.y,R,0,6.2832); tctx.fill();
+  }
+  // hot white spark right at the plane
+  for (let i=0;i<trail.length;i++){
+    const b=trail[i];
+    const life=1-(curU-b.u)/TRAIL_SPAN; if(life<=0||b.op<=0) continue;
+    const R=3 + 7*life*life;
+    const a=0.5*Math.pow(life,4)*b.op;
+    const g=tctx.createRadialGradient(b.x,b.y,0, b.x,b.y,R);
+    g.addColorStop(0.0,`rgba(235,232,255,${a})`);
+    g.addColorStop(1.0,'rgba(235,232,255,0)');
+    tctx.fillStyle=g; tctx.beginPath(); tctx.arc(b.x,b.y,R,0,6.2832); tctx.fill();
+  }
+  tctx.globalCompositeOperation='source-over';
+}
+
+const W = window.innerWidth, H = window.innerHeight;
+const P = { x: W/2, y: H/2 };                       // loop is centred on screen centre
+const r = Math.min(W, H) * 0.18;                    // loop radius
+const Lc = 2 * Math.PI * r;                          // loop arc length
+
+const S    = Math.SQRT1_2;
+const d    = { x: S, y: -S };                       // heading: up-right (y is down)
+const dDeg = Math.atan2(d.y, d.x) * 180 / Math.PI;  // -45deg
+const ART_OFFSET = 45;                              // mark art naturally points up-right
+
+// short straight run-in / run-out so the plane enters and leaves through the visible corners
+const La = Lc * 0.82;                                // approach length
+const Le = Lc * 0.75;                                // exit length
+const p0    = { x: P.x - d.x*La, y: P.y - d.y*La }; // just off bottom-left corner
+const pExit = { x: P.x + d.x*Le, y: P.y + d.y*Le }; // just off top-right corner
+
+// loop: perfect circle, tangent to the diagonal at P on both ends. loopDir -1 = nose UP & over.
+const psi0    = Math.atan2(d.y, d.x);               // start heading = diagonal
+const loopDir = -1;
+const w       = loopDir * 2 * Math.PI;
+const Cw      = r / loopDir;                         // C/omega, sets the circle geometry
+function loopPos(s){
+  const psi = psi0 + w*s;
+  return { x: P.x + Cw*(Math.sin(psi) - Math.sin(psi0)),
+           y: P.y + Cw*(Math.cos(psi0) - Math.cos(psi)) };
+}
+function loopHeadingDeg(s){ return (psi0 + w*s) * 180 / Math.PI; }
+
+const T = La + Lc + Le;                              // total arc length
+const lerp = (a,b,t)=>({ x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t });
+function smoothstep(a,b,x){ x=Math.min(1,Math.max(0,(x-a)/(b-a))); return x*x*(3-2*x); }
+
+// --- speed profile over linear time u: soft launch, savour the loop (mid dip), graceful glide-out ---
+function speed(u){
+  const rampIn  = smoothstep(0.00, 0.12, u);        // quick, gentle launch
+  const rampOut = 1 - 0.55*smoothstep(0.62, 1.00, u); // gently keep drifting out as it fades
+  const loopDip = 0.36 * Math.exp(-Math.pow((u-0.46)/0.16, 2)); // slow through the loop
+  return (0.16 + 0.84*rampIn) * rampOut * (1 - loopDip);
+}
+// integrate speed -> cumulative arc-length table, so u maps to an eased fraction of the path
+const N = 800, cum = new Float64Array(N+1);
+for (let i=1;i<=N;i++){
+  const u0=(i-1)/N, u1=i/N;
+  cum[i] = cum[i-1] + 0.5*(speed(u0)+speed(u1))*(1/N);
+}
+const cumTotal = cum[N];
+function arclenFrac(u){
+  const x=Math.min(1,Math.max(0,u))*N, i=Math.floor(x), f=x-i;
+  const c = i>=N ? cum[N] : cum[i]+(cum[i+1]-cum[i])*f;
+  return c/cumTotal;
+}
+
+function render(u){
+  const sArc = arclenFrac(u) * T;
+  let pos, headingDeg;
+  if (sArc < La){                                    // approach (straight)
+    pos = lerp(p0, P, sArc/La); headingDeg = dDeg;
+  } else if (sArc < La + Lc){                         // loop (circle)
+    const s=(sArc-La)/Lc; pos = loopPos(s); headingDeg = loopHeadingDeg(s);
+  } else {                                            // exit (straight)
+    pos = lerp(P, pExit, (sArc-La-Lc)/Le); headingDeg = dDeg;
+  }
+
+  // gentle air buoyancy: sway perpendicular to travel, faded to zero inside the loop
+  const headRad = headingDeg * Math.PI / 180;
+  const perp = { x: -Math.sin(headRad), y: Math.cos(headRad) };
+  const distP = Math.hypot(pos.x - P.x, pos.y - P.y);
+  const ampScale = smoothstep(r*1.3, r*3.2, distP);   // 0 near the loop, 1 out on the straights
+  const sway = Math.sin(u * 34) * 3.0 * ampScale;
+  pos = { x: pos.x + perp.x*sway, y: pos.y + perp.y*sway };
+
+  const opacity = smoothstep(0.00, 0.07, u) * (1 - smoothstep(0.72, 0.92, u));
+  const scale   = (0.88 + 0.12*smoothstep(0.00,0.14,u))   // grow in as it arrives
+                * (1 - 0.42*smoothstep(0.60,0.95,u));      // shrink and dissolve into the distance
+
+  // feed the contrail, then trim expired points
+  trail.push({ x:pos.x, y:pos.y, u, op:opacity });
+  while (trail.length && u - trail[0].u > TRAIL_SPAN) trail.shift();
+  drawTrail(u);
+
+  gsap.set(plane, {
+    x:pos.x, y:pos.y, xPercent:-50, yPercent:-50,
+    rotation: headingDeg + ART_OFFSET, scale, opacity
+  });
+}
+
+if (!gsap){
+  stage.style.visibility='visible';
+  plane.style.opacity='1';
+  plane.style.transform=`translate(${P.x}px,${P.y}px) translate(-50%,-50%)`;
+} else if (reduce){
+  stage.style.visibility='visible';
+  gsap.set(plane,{ x:P.x, y:P.y, xPercent:-50, yPercent:-50, opacity:1 });
+} else {
+  gsap.set(stage,{ visibility:'visible' });
+  render(0);
+  const drive = { u:0 };
+  const seekT = new URLSearchParams(location.search).get('t');
+  const noNav = seekT !== null || jumpToEnd || location.search.indexOf('stay') > -1;
+
+  // NOTE: the real app flow lives in home.html (splash overlay + home in one page).
+  // This file is the isolated splash for reviewing/tuning the animation only.
+  const tl = gsap.timeline();
+  tl.to(drive, { u:1, duration:2.9, ease:'none', onUpdate:()=>render(drive.u) }, 0);
+
+  if (seekT !== null){
+    const target = parseFloat(seekT), steps = Math.max(1, Math.round(target*60));
+    for (let i=0;i<=steps;i++) tl.time(target*i/steps);     // replay so the trail history exists
+    tl.pause();
+  } else if (jumpToEnd){ tl.time(2.0).pause(); }
+}
+</script>
+</body>
+</html>
