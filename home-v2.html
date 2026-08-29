@@ -1372,17 +1372,16 @@
     return c;
   }
   function showFlights(){
-    const w=el('div','msg agent','<span class="dots"><i></i><i></i><i></i></span>');
+    // Build the summary message + CTA silently in the chat (so Back shows them),
+    // then jump straight to the list — no typing beat, no visible CTA-then-redirect.
+    const total=BUCKETS.reduce(function(n,b){ return n+b.cards.length; },0);
+    const w=el('div','msg agent');
+    w.textContent="Done, Sukesh 🎉 I checked with my partners and negotiated "+total+" "+TRIP.dest+" deals that match what you asked for — best prices, seat included, one honest all-in price.";
     agScroll.appendChild(w); scrollToMsg(w);
-    setTimeout(function(){
-      const total=BUCKETS.reduce(function(n,b){ return n+b.cards.length; },0);
-      w.textContent="Done, Sukesh 🎉 I checked with my partners and negotiated "+total+" "+TRIP.dest+" deals that match what you asked for — best prices, seat included, one honest all-in price.";
-      RESFILTER.time='any'; RESFILTER.airline='any';
-      buildResults();
-      addDealsCTA(total);
-      scrollToMsg(w);
-      setTimeout(openResults, 1100);   // auto-open the list; the message + CTA stay in chat for when the user comes back
-    }, 850);
+    RESFILTER.time='any'; RESFILTER.airline='any';
+    buildResults();
+    addDealsCTA(total);
+    openResults();
   }
   function addDealsCTA(total){
     const wrap=el('div','chat-action');
@@ -1494,7 +1493,7 @@
         card.querySelector('.nego-spin').classList.add('done');
         list.innerHTML='<div class="nego-step done">'+okIcon+' <span>Curated your best picks</span></div>';
         haptic([12,45,22]);
-        down(); setTimeout(showFlights, 600); return;
+        down(); setTimeout(showFlights, 350); return;
       }
       haptic(7);
       pct.textContent=Math.round(i/STEPS.length*100)+'%';
