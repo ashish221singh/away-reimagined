@@ -1381,7 +1381,7 @@
     RESFILTER.time='any'; RESFILTER.airline='any';
     buildResults();
     addDealsCTA(total);
-    openResults();
+    openResults(true);   // instant (no slide) so the chat + CTA never flash before the list
   }
   function addDealsCTA(total){
     const wrap=el('div','chat-action');
@@ -1455,7 +1455,12 @@
   rfAir.addEventListener('click', function(e){ e.stopPropagation(); openMenu('airline', rfAir); });
   rfClear.addEventListener('click', clearFilters);
   document.addEventListener('click', function(e){ if(menuOpenFor && !resMenu.contains(e.target) && !e.target.closest('.rf-chip')) closeMenu(); });
-  function openResults(){ haptic(14); results.classList.add('open'); results.setAttribute('aria-hidden','false'); resScroll.scrollTop=0; }
+  function openResults(instant){
+    haptic(14);
+    if(instant){ results.style.transition='none'; results.classList.add('open'); void results.offsetWidth; results.style.transition=''; }
+    else { results.classList.add('open'); }
+    results.setAttribute('aria-hidden','false'); resScroll.scrollTop=0;
+  }
   function closeResults(){ closeMenu(); results.classList.remove('open'); results.setAttribute('aria-hidden','true'); }
   resBack.addEventListener('click', closeResults);
   /* ---------- sound + haptics: the travel feeling ---------- */
