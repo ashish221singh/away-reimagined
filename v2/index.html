@@ -45,8 +45,8 @@
     transition:opacity .4s ease, transform .55s cubic-bezier(.22,.61,.36,1);
   }
   /* Slice-style floating dock: soft fade, no solid bar */
-  .dock-fade{ position:absolute; left:0; right:0; bottom:0; height:150px; pointer-events:none;
-    background:linear-gradient(180deg, rgba(108,92,209,0) 0%, rgba(108,92,209,.7) 60%, #6C5CD1 100%); }
+  .dock-fade{ position:absolute; left:0; right:0; bottom:0; height:172px; pointer-events:none;
+    background:linear-gradient(180deg, rgba(108,92,209,0) 0%, rgba(108,92,209,.92) 46%, #6C5CD1 64%, #6C5CD1 100%); }
   .dock-row{ position:relative; display:flex; align-items:center; justify-content:space-around;
     padding:0 26px calc(20px + env(safe-area-inset-bottom)); }
   .dnav{ display:flex; align-items:center; justify-content:center; text-decoration:none; cursor:pointer; flex:0 0 auto; }
@@ -69,7 +69,7 @@
 
   /* profile button (left) — same glass system, revealed with the dock */
   .profile{
-    position:absolute; z-index:3;
+    position:absolute; z-index:4;
     top:calc(14px + env(safe-area-inset-top)); left:12px;
     width:46px; height:46px; padding:0;
     display:flex; align-items:center; justify-content:center;
@@ -86,7 +86,7 @@
 
   /* burger menu (right) */
   .menu{
-    position:absolute; z-index:3;
+    position:absolute; z-index:4;
     top:calc(14px + env(safe-area-inset-top)); right:14px;
     width:46px; height:46px; padding:0; border:none; background:none; box-shadow:none;
     display:flex; align-items:center; justify-content:center;
@@ -99,7 +99,7 @@
   .menu:active{ transform:scale(.9); }
   .menu .ico{ width:27px; height:27px; display:block; }
   /* page header name (shown on Bookings / Refer, replacing the burger) */
-  .page-title{ position:absolute; z-index:3; top:calc(14px + env(safe-area-inset-top)); left:18px; height:46px;
+  .page-title{ position:absolute; z-index:4; top:calc(14px + env(safe-area-inset-top)); left:18px; height:46px;
     display:none; align-items:center; font-family:var(--display); font-weight:600; font-size:25px; color:#1b1a26; letter-spacing:.2px; }
   /* dock adapts on the white pages */
   body.light-tab .dock-fade{ background:linear-gradient(180deg, rgba(255,255,255,0), #fff 72%); }
@@ -110,13 +110,15 @@
   /* ---------- Explore (fresh user): a calm concierge entry ---------- */
   .canvas{
     position:absolute; inset:0;
-    display:flex; flex-direction:column; justify-content:center;
-    padding:104px 22px 150px;
+    display:flex; flex-direction:column; justify-content:flex-start;
+    overflow-y:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    padding:100px 22px 130px;
     /* Away brand gradient — the main page surface */
     background:
       radial-gradient(130% 70% at 50% -10%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 45%),
       linear-gradient(135deg, #7665E7 0%, #6C5DD3 55%, #6C5CD1 100%);
   }
+  .canvas::-webkit-scrollbar{ display:none; }
   /* faded travel aesthetic in the top area — clouds from a plane, blended into the purple */
   .canvas::before{
     content:''; position:absolute; left:0; right:0; top:0; height:42%; z-index:0; pointer-events:none;
@@ -132,6 +134,18 @@
     transition:opacity .5s ease .05s, transform .6s cubic-bezier(.22,.61,.36,1) .05s;
   }
   body.revealed .explore{ opacity:1; transform:translateY(0); }
+
+  /* top fade — appears only on scroll, so content dissolves under the header */
+  .top-fade{ position:absolute; z-index:3; left:0; right:0; top:0; height:120px; pointer-events:none; opacity:0;
+    background:
+      radial-gradient(130% 70% at 50% -10%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 45%),
+      linear-gradient(135deg, #7665E7 0%, #6C5DD3 55%, #6C5CD1 100%);
+    background-size:100% 100vh, 100% 100vh; background-position:top,top; background-repeat:no-repeat;
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 50%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 0%,#000 50%,transparent 100%);
+    transition:opacity .3s ease; }
+  body.scrolled .top-fade{ opacity:1; }
+  body.light-tab .top-fade{ opacity:0; }
 
   .ask-q{
     font-family:var(--display);
@@ -238,6 +252,107 @@
     color:rgba(255,255,255,.68);
   }
   .payoff b{ color:#fff; font-weight:600; }
+
+  /* ---------- entry search card (MakeMyTrip-style, its own CTA) ---------- */
+  .sc-or{ align-self:stretch; display:flex; align-items:center; gap:12px; margin:20px 2px 12px; }
+  .sc-or::before, .sc-or::after{ content:''; flex:1; height:1px; background:rgba(255,255,255,.18); }
+  .sc-or span{ font-family:var(--ui); font-size:14px; font-weight:600; color:rgba(255,255,255,.78); letter-spacing:.02em; white-space:nowrap; }
+  /* frosted-glass panel — secondary to the chat composer, same purple/glass world */
+  .search-card{ align-self:stretch; background:rgba(255,255,255,.08); -webkit-backdrop-filter:blur(20px) saturate(1.2); backdrop-filter:blur(20px) saturate(1.2); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:6px; box-shadow:0 10px 30px rgba(30,27,46,.12); }
+  .sc-od{ display:flex; align-items:stretch; position:relative; margin-top:2px; }
+  .sc-field{ flex:1; min-width:0; text-align:left; background:none; border:none; cursor:pointer; padding:13px 14px; border-radius:14px; display:flex; flex-direction:column; gap:3px; transition:background .15s ease; }
+  .sc-field:active{ background:rgba(255,255,255,.08); }
+  .sc-lbl{ font-family:var(--ui); font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.55); }
+  .sc-city{ font-family:var(--ui); font-size:16.5px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sc-city.sc-ph{ color:rgba(255,255,255,.55); font-weight:600; }
+  .sc-code{ font-family:var(--ui); font-size:11.5px; font-weight:600; color:rgba(255,255,255,.5); }
+  .sc-od{ border-bottom:1px solid rgba(255,255,255,.12); }
+  .sc-od .sc-field:last-child{ align-items:flex-end; text-align:right; }
+  .sc-swap{ flex:0 0 auto; align-self:center; width:38px; height:38px; margin:0 -6px; z-index:1; border-radius:50%; border:1px solid rgba(255,255,255,.24); background:rgba(255,255,255,.14); color:#fff; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .sc-swap svg{ width:17px; height:17px; }
+  .sc-swap:active{ transform:scale(.9) rotate(180deg); }
+  .sc-dates{ display:flex; position:relative; border-bottom:1px solid rgba(255,255,255,.12); }
+  .sc-dates::after{ content:''; position:absolute; left:50%; top:11px; bottom:11px; width:1px; background:rgba(255,255,255,.12); }
+  .sc-dates .sc-field.dim{ opacity:.4; pointer-events:none; }
+  .sc-wide{ width:100%; }
+  .sc-search{ display:block; width:calc(100% - 28px); margin:10px auto 8px; padding:14px; border-radius:14px; cursor:pointer; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.7); font-family:var(--ui); font-size:15px; font-weight:700; transition:transform .14s ease, background .22s ease, color .22s ease, box-shadow .22s ease; }
+  .sc-search:active{ transform:scale(.98); }
+  .sc-search.ready{ background:#fff; border-color:#fff; color:#5A4FC4; box-shadow:0 10px 26px rgba(30,27,46,.24); }
+  /* required-field error state — just the label turns red + the message below */
+  .sc-field.err .sc-lbl{ color:#ff9d9d; }
+  .sc-hint{ font-family:var(--ui); font-size:12.5px; font-weight:600; color:#ffd0d0; text-align:center; margin:8px 2px 2px; max-height:0; opacity:0; overflow:hidden; transition:opacity .2s ease, max-height .2s ease; }
+  .sc-hint.show{ opacity:1; max-height:40px; }
+
+  /* entry chat composer — white, the primary hero */
+  #composer{ background:#fff; border:1px solid rgba(108,93,209,.14); box-shadow:0 16px 40px rgba(30,27,46,.2); -webkit-backdrop-filter:none; backdrop-filter:none; }
+  #composer .ti-field{ color:#1E1B2E; }
+  #composer .ti-field::placeholder{ color:rgba(30,27,46,.42); }
+  #composer .ta-btn{ background:#F3F0FC; border:none; color:#6257B0; }
+  #composer .ta-btn:active{ background:#E8E2FA; }
+  #composer .ta-image.peek{ background:#F3F0FC; border-color:transparent; }
+  #composer .ta-lbl{ color:#5A4FC4; }
+  #composer .ta-send{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; }
+  #composer.has-text .ta-send{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; border-color:transparent; box-shadow:0 6px 16px rgba(108,93,209,.3); }
+  #composer.listening .ta-mic{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; border-color:transparent; }
+
+  /* class chips inside the travellers picker */
+  .cls-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  .cls-chip{ padding:10px 15px; border-radius:14px; border:1px solid rgba(108,93,209,.16); background:#fff; color:#3a3550; font-family:var(--ui); font-size:13.5px; font-weight:600; cursor:pointer; }
+  .cls-chip.on{ background:#F1ECFD; border-color:rgba(108,93,209,.5); color:#5A4FC4; }
+  .pk-sec-lbl{ font-family:var(--ui); font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:rgba(30,27,46,.42); margin:16px 0 2px; }
+
+  /* ---------- picker bottom sheet ---------- */
+  .pk-wrap{ position:fixed; inset:0; z-index:75; visibility:hidden; }
+  .pk-wrap.open{ visibility:visible; }
+  .pk-scrim{ position:absolute; inset:0; background:rgba(20,18,28,.5); opacity:0; transition:opacity .3s ease; }
+  .pk-wrap.open .pk-scrim{ opacity:1; }
+  .pk{ position:absolute; left:0; right:0; bottom:0; display:flex; flex-direction:column; max-height:88%;
+    background:#FCFBFF; border-top-left-radius:28px; border-top-right-radius:28px; border-top:1px solid rgba(108,93,209,.1);
+    box-shadow:0 -24px 60px rgba(30,27,46,.28); transform:translateY(100%); transition:transform .34s cubic-bezier(.4,0,.2,1); }
+  .pk-wrap.open .pk{ transform:translateY(0); }
+  .pk-top{ padding:12px 18px 8px; flex:0 0 auto; }
+  .pk-grab{ display:block; width:42px; height:4px; border-radius:3px; background:rgba(30,27,46,.16); margin:0 auto 14px; }
+  .pk-head-row{ display:flex; align-items:center; justify-content:space-between; }
+  .pk-title{ font-family:var(--display); font-size:21px; font-weight:600; color:#1E1B2E; }
+  .pk-close{ width:36px; height:36px; border-radius:50%; border:none; background:#fff; color:#3a3550; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 14px rgba(108,93,209,.14); }
+  .pk-close svg{ width:15px; height:15px; }
+  .pk-body{ overflow-y:auto; padding:8px 18px 6px; }
+  .pk-foot{ flex:0 0 auto; padding:12px 18px calc(16px + env(safe-area-inset-bottom)); }
+  .pk-done{ width:100%; padding:15px; border-radius:16px; border:none; cursor:pointer; background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; font-family:var(--ui); font-size:15px; font-weight:600; box-shadow:0 8px 20px rgba(108,93,209,.32); }
+  .pk-done:disabled{ opacity:.5; }
+  .pk-done:active{ transform:scale(.98); }
+
+  /* calendar */
+  .cal-flex{ display:flex; gap:9px; margin-bottom:14px; }
+  .cal-fchip{ flex:1; padding:11px; border-radius:14px; border:1px solid rgba(108,93,209,.16); background:#fff; color:#3a3550; font-family:var(--ui); font-size:13px; font-weight:600; cursor:pointer; text-align:center; }
+  .cal-fchip.on{ background:#F1ECFD; border-color:rgba(108,93,209,.5); color:#5A4FC4; }
+  .cal-mon{ margin-bottom:18px; }
+  .cal-mlabel{ font-family:var(--ui); font-size:13.5px; font-weight:700; color:#1E1B2E; text-align:center; margin-bottom:10px; }
+  .cal-dow{ display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px; }
+  .cal-dow span{ text-align:center; font-family:var(--ui); font-size:10.5px; font-weight:600; color:rgba(30,27,46,.4); }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px 0; }
+  .cal-d{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-family:var(--ui); font-size:13.5px; font-weight:500; color:#2b273d; cursor:pointer; border-radius:50%; position:relative; }
+  .cal-d.mut{ color:rgba(30,27,46,.22); pointer-events:none; }
+  .cal-d.dis{ color:rgba(30,27,46,.2); pointer-events:none; text-decoration:line-through; }
+  .cal-d.in{ background:rgba(108,93,209,.1); border-radius:0; }
+  .cal-d.sel{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; font-weight:700; }
+  .cal-d.s-start{ border-top-left-radius:50%; border-bottom-left-radius:50%; }
+  .cal-d.s-end{ border-top-right-radius:50%; border-bottom-right-radius:50%; }
+
+  /* traveller stepper rows */
+  .who-row{ display:flex; align-items:center; justify-content:space-between; padding:16px 4px; border-bottom:1px solid rgba(30,27,46,.07); }
+  .who-row:last-child{ border-bottom:none; }
+  .who-t{ font-family:var(--ui); font-size:15px; font-weight:600; color:#1E1B2E; }
+  .who-s{ font-family:var(--ui); font-size:12.5px; color:rgba(30,27,46,.5); margin-top:2px; }
+  .who-step{ display:flex; align-items:center; gap:14px; }
+  .who-step button{ width:36px; height:36px; border-radius:50%; border:none; background:#fff; color:#4a4560; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(108,93,209,.14); }
+  .who-step button:disabled{ opacity:.4; }
+  .who-step .who-n{ font-family:var(--ui); font-size:16px; font-weight:600; color:#1E1B2E; min-width:22px; text-align:center; }
+
+  /* from city list */
+  .city-r{ display:flex; align-items:center; justify-content:space-between; width:100%; padding:14px 6px; border:none; background:none; cursor:pointer; border-bottom:1px solid rgba(30,27,46,.06); font-family:var(--ui); font-size:15px; color:#1E1B2E; text-align:left; }
+  .city-r .city-c{ font-size:12.5px; font-weight:600; color:rgba(30,27,46,.4); }
+  .city-r.sel{ color:#5A4FC4; font-weight:700; }
 
   /* "Your trips" — present in both states; here it's the empty (first-time) case */
   .trips{ width:100%; margin-top:6px; display:flex; flex-direction:column; gap:12px; }
@@ -369,7 +484,7 @@
   .ag-sound.muted{ color:rgba(58,53,80,.5); }
   .ag-sound.muted .ic-on{ display:none; }
   .ag-sound.muted .ic-off{ display:block; }
-  .ag-menu{ width:44px; height:44px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center; color:#3a3550; cursor:pointer; }
+  .ag-menu{ margin-left:auto; width:44px; height:44px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center; color:#3a3550; cursor:pointer; }
   .ag-menu svg{ width:26px; height:26px; }
   .ag-menu:active{ transform:scale(.9); }
   .ag-title{ font-family:var(--ui); font-size:15px; font-weight:600; color:#fff; }
@@ -877,6 +992,7 @@
 <body>
   <!-- HOME -->
   <div class="page">
+    <div class="top-fade" aria-hidden="true"></div>
     <button class="glass profile" aria-label="Profile">
       <img class="avatar" src="https://i.pravatar.cc/120?img=68" alt="" onerror="this.style.display='none'">
     </button>
@@ -913,7 +1029,22 @@
           </div>
         </div>
 
-        <p class="payoff"><b>The price you see is the price you pay.</b><br>One final price, seat included.</p>
+        <div class="sc-or"><span>or search the usual way</span></div>
+
+        <div class="search-card" id="searchCard">
+          <div class="sc-od">
+            <button class="sc-field" id="scFrom" type="button"><span class="sc-lbl">From</span><span class="sc-city" id="scFromV">Bangalore</span><span class="sc-code" id="scFromC">BLR</span></button>
+            <button class="sc-swap" id="scSwap" type="button" aria-label="Swap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
+            <button class="sc-field" id="scTo" type="button"><span class="sc-lbl">To</span><span class="sc-city sc-ph" id="scToV">Select city</span><span class="sc-code" id="scToC"></span></button>
+          </div>
+          <div class="sc-dates">
+            <button class="sc-field" id="scDep" type="button"><span class="sc-lbl">Departure</span><span class="sc-city sc-ph" id="scDepV">Add date</span></button>
+            <button class="sc-field" id="scRet" type="button"><span class="sc-lbl">Return</span><span class="sc-city sc-ph" id="scRetV">Add date</span></button>
+          </div>
+          <button class="sc-field sc-wide" id="scWho" type="button"><span class="sc-lbl">Travellers &amp; class</span><span class="sc-city" id="scWhoV">1 Traveller · Economy</span></button>
+          <button class="sc-search" id="scSearch" type="button">Search flights</button>
+          <div class="sc-hint" id="scHint"></div>
+        </div>
       </div>
     </main>
 
@@ -958,10 +1089,6 @@
     <header class="agent-head">
       <button class="ag-back" id="agBack" type="button" aria-label="Back">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <button class="ag-sound" id="agSound" type="button" aria-label="Sound on/off">
-        <svg class="ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8 8 0 0 1 0 12"/></svg>
-        <svg class="ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
       </button>
       <button class="ag-menu" id="agMenuBtn" type="button" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h11"/></svg>
@@ -1044,6 +1171,20 @@
         </div>
         <button class="sheet-book" type="button">Book it</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Detail picker (dates / travellers / from) -->
+  <div id="picker" class="pk-wrap" aria-hidden="true">
+    <div class="pk-scrim"></div>
+    <div class="pk">
+      <div class="pk-top"><span class="pk-grab"></span>
+        <div class="pk-head-row"><span class="pk-title" id="pkTitle">When are you going?</span>
+          <button class="pk-close" id="pkClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+      </div>
+      <div class="pk-body" id="pkBody"></div>
+      <div class="pk-foot"><button class="pk-done" id="pkDone" type="button">Done</button></div>
     </div>
   </div>
 
@@ -1521,6 +1662,7 @@
     });
   }
   function afterFrom(){
+    if(TRIP.roundTrip!=null){ setTimeout(afterTrip, 150); return; }   // already chosen via the pill
     botSay('Round trip or one way?', function(){
       aChips(['Round trip','One way'], function(tt){ aUser(tt); setTimeout(afterTrip, 300); });
     });
@@ -1744,6 +1886,108 @@
     closeSheet();
     startPayment(d);
   });
+
+  /* ---------- entry search card (MakeMyTrip-style; own CTA, lands in chat + negotiation) ---------- */
+  (function(){
+    const ORIGINS=[['Bangalore','BLR'],['Mumbai','BOM'],['Delhi','DEL'],['Hyderabad','HYD'],['Chennai','MAA'],['Kolkata','CCU'],['Pune','PNQ'],['Ahmedabad','AMD']];
+    const DEST_KEYS=['goa','dubai','bangkok','bali','singapore','maldives','kashmir','manali','jaipur','kerala'];
+    const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DOW=['S','M','T','W','T','F','S'], WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const TODAY={y:2026,m:7,d:29};   // demo "today": 29 Aug 2026 (m is 0-based)
+    const codeToKey={}; Object.keys(DEST_DB).forEach(function(k){ codeToKey[DEST_DB[k].iata]=k; });
+    const picker=document.getElementById('picker'), pkBody=document.getElementById('pkBody'), pkTitle=document.getElementById('pkTitle'), pkDone=document.getElementById('pkDone'), pkFoot=picker.querySelector('.pk-foot');
+    const $=function(id){ return document.getElementById(id); };
+    const scFromV=$('scFromV'), scFromC=$('scFromC'), scToV=$('scToV'), scToC=$('scToC'), scDepV=$('scDepV'), scRetV=$('scRetV'), scRet=$('scRet'), scWhoV=$('scWhoV'), scSearch=$('scSearch');
+    const FORM={ fromCode:'BLR', fromName:'Bangalore', toKey:null, toName:null, toCode:null, dep:null, ret:null, adults:1, kids:0, cabin:'Economy' };
+    let pkKind=null, calFor=null, calSel=null, cityList=[], wA=1, wK=0, wCabin='Economy';
+    function cmp(a,b){ return (a.y-b.y)||(a.m-b.m)||(a.d-b.d); }
+    function fmtLong(dt){ return WD[new Date(dt.y,dt.m,dt.d).getDay()]+', '+dt.d+' '+MON[dt.m]; }
+    function fmtShort(dt){ return dt.d+' '+MON[dt.m]; }
+    function setPh(el,ph){ el.classList.toggle('sc-ph', ph); }
+    function updateCard(){
+      scFromV.textContent=FORM.fromName; scFromC.textContent=FORM.fromCode;
+      if(FORM.toName){ scToV.textContent=FORM.toName; setPh(scToV,false); scToC.textContent=FORM.toCode; } else { scToV.textContent='Select city'; setPh(scToV,true); scToC.textContent=''; }
+      if(FORM.dep){ scDepV.textContent=fmtLong(FORM.dep); setPh(scDepV,false); } else { scDepV.textContent='Add date'; setPh(scDepV,true); }
+      if(FORM.ret){ scRetV.textContent=fmtLong(FORM.ret); setPh(scRetV,false); } else { scRetV.textContent='Add date'; setPh(scRetV,true); }
+      const pax=FORM.adults+FORM.kids; scWhoV.textContent=pax+' Traveller'+(pax>1?'s':'')+' · '+FORM.cabin;
+      const ok=!!(FORM.toKey && FORM.dep); scSearch.classList.toggle('ready', ok);
+      if(FORM.toKey) document.getElementById('scTo').classList.remove('err');
+      if(FORM.dep) document.getElementById('scDep').classList.remove('err');
+      if(ok) document.getElementById('scHint').classList.remove('show');
+    }
+    function openPicker(kind,title,foot){ pkKind=kind; pkTitle.textContent=title; pkFoot.style.display=foot?'':'none'; haptic(12); picker.classList.add('open'); picker.setAttribute('aria-hidden','false'); }
+    function closePicker(){ picker.classList.remove('open'); picker.setAttribute('aria-hidden','true'); pkKind=null; }
+    // ---- city ----
+    function buildCity(which){
+      cityList = which==='from' ? ORIGINS.map(function(c){return {name:c[0],code:c[1]};}) : DEST_KEYS.map(function(k){return {name:DEST_DB[k].city,code:DEST_DB[k].iata,key:k};});
+      pkBody.innerHTML=cityList.map(function(c,i){ const sel=which==='from'?(c.code===FORM.fromCode):(c.key===FORM.toKey); return '<button class="city-r'+(sel?' sel':'')+'" data-i="'+i+'" data-w="'+which+'" type="button"><span>'+c.name+'</span><span class="city-c">'+c.code+'</span></button>'; }).join('');
+      pkBody.querySelectorAll('.city-r').forEach(function(b){ b.addEventListener('click',function(){ const c=cityList[+b.dataset.i]; if(b.dataset.w==='from'){ FORM.fromCode=c.code; FORM.fromName=c.name; } else { FORM.toKey=c.key; FORM.toName=c.name; FORM.toCode=c.code; } haptic(10); updateCard(); closePicker(); }); });
+    }
+    // ---- date (single select) ----
+    function buildDateCal(){
+      const minD=(calFor==='ret'&&FORM.dep)?FORM.dep:TODAY;
+      let html='';
+      for(let k=0;k<4;k++){ const m=(TODAY.m+k)%12, y=TODAY.y+Math.floor((TODAY.m+k)/12); html+=monthHTML(y,m,minD); }
+      pkBody.innerHTML=html;
+      pkBody.querySelectorAll('.cal-d[data-day]').forEach(function(c){ c.addEventListener('click',function(){ pickDate({y:+c.dataset.y,m:+c.dataset.m,d:+c.dataset.day}); }); });
+    }
+    function monthHTML(y,m,minD){
+      const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+      let g='<div class="cal-mon"><div class="cal-mlabel">'+MONTHS[m]+' '+y+'</div><div class="cal-dow">'+DOW.map(function(d){return '<span>'+d+'</span>';}).join('')+'</div><div class="cal-grid">';
+      for(let i=0;i<first;i++) g+='<div class="cal-d mut"></div>';
+      for(let d=1;d<=days;d++){ const dt={y:y,m:m,d:d}; let cls='cal-d'; const dis=cmp(dt,minD)<0;
+        if(dis) cls+=' dis'; else if(calSel&&cmp(dt,calSel)===0) cls+=' sel';
+        g+='<div class="'+cls+'"'+(dis?'':' data-day="'+d+'" data-y="'+y+'" data-m="'+m+'"')+'>'+d+'</div>'; }
+      return g+'</div></div>';
+    }
+    function pickDate(dt){ if(calFor==='dep'){ FORM.dep=dt; if(FORM.ret&&cmp(FORM.ret,dt)<0) FORM.ret=null; } else { FORM.ret=dt; } haptic(10); updateCard(); closePicker(); }
+    // ---- travellers & class ----
+    function buildWho(){
+      pkBody.innerHTML = whoRow('Adults','12+ years','a',wA,1)+whoRow('Children','2–11 years','k',wK,0)+
+        '<div class="pk-sec-lbl">Cabin class</div><div class="cls-row">'+['Economy','Premium economy','Business'].map(function(c){ return '<button class="cls-chip'+(wCabin===c?' on':'')+'" data-c="'+c+'" type="button">'+c+'</button>'; }).join('')+'</div>';
+      pkBody.querySelectorAll('.who-step button').forEach(function(b){ b.addEventListener('click',function(){ const k=b.dataset.k,op=b.dataset.op; if(k==='a') wA=Math.max(1,Math.min(9,wA+(op==='+'?1:-1))); else wK=Math.max(0,Math.min(9,wK+(op==='+'?1:-1))); buildWho(); }); });
+      pkBody.querySelectorAll('.cls-chip').forEach(function(b){ b.addEventListener('click',function(){ wCabin=b.dataset.c; buildWho(); }); });
+    }
+    function whoRow(t,s,k,v,min){ return '<div class="who-row"><div><div class="who-t">'+t+'</div><div class="who-s">'+s+'</div></div><div class="who-step"><button data-k="'+k+'" data-op="-" '+(v<=min?'disabled':'')+' type="button">−</button><span class="who-n">'+v+'</span><button data-k="'+k+'" data-op="+" type="button">+</button></div></div>'; }
+    // ---- wire ----
+    $('scFrom').addEventListener('click', function(){ buildCity('from'); openPicker('from','Flying from?',false); });
+    $('scTo').addEventListener('click', function(){ buildCity('to'); openPicker('to','Where to?',false); });
+    $('scDep').addEventListener('click', function(){ calFor='dep'; calSel=FORM.dep; buildDateCal(); openPicker('dep','Departure date',false); });
+    scRet.addEventListener('click', function(){ calFor='ret'; calSel=FORM.ret; buildDateCal(); openPicker('ret','Return date (optional)',false); });
+    $('scWho').addEventListener('click', function(){ wA=FORM.adults; wK=FORM.kids; wCabin=FORM.cabin; buildWho(); openPicker('who','Travellers & class',true); });
+    $('scSwap').addEventListener('click', function(){ if(!FORM.toCode) return; const of=FORM.fromCode, ofn=FORM.fromName; FORM.fromCode=FORM.toCode; FORM.fromName=FORM.toName; FORM.toCode=of; FORM.toName=ofn; FORM.toKey=codeToKey[of]||FORM.toKey; haptic(10); updateCard(); });
+    pkDone.addEventListener('click', function(){ if(pkKind==='who'){ FORM.adults=wA; FORM.kids=wK; FORM.cabin=wCabin; haptic(10); updateCard(); closePicker(); } });
+    document.getElementById('pkClose').addEventListener('click', closePicker);
+    picker.querySelector('.pk-scrim').addEventListener('click', closePicker);
+    // ---- search flights → chat + negotiation ----
+    scSearch.addEventListener('click', function(){
+      const missTo=!FORM.toKey, missDep=!FORM.dep;
+      if(missTo||missDep){
+        document.getElementById('scTo').classList.toggle('err', missTo);
+        document.getElementById('scDep').classList.toggle('err', missDep);
+        const h=document.getElementById('scHint');
+        h.textContent = (missTo&&missDep) ? 'Add a destination and departure date to search.' : (missTo ? 'Choose where you’d like to go.' : 'Add your departure date.');
+        h.classList.add('show'); haptic([28,40,28]);
+        return;
+      }
+      const pax=FORM.adults+FORM.kids, isRound=!!FORM.ret;
+      const dstr = isRound ? (fmtShort(FORM.dep)+' – '+fmtShort(FORM.ret)) : fmtShort(FORM.dep);
+      const msg = FORM.fromName+' to '+FORM.toName+', '+dstr+', '+pax+(pax>1?' travellers':' traveller')+', '+(isRound?'round trip':'one way')+', '+FORM.cabin.toLowerCase();
+      FX.unlock(); haptic(14);
+      agScroll.innerHTML=''; convoState='flow'; fromCode=FORM.fromCode;
+      TRIP={ destKey:FORM.toKey, dest:FORM.toName, to:FORM.toCode, from:FORM.fromCode, fromName:FORM.fromName, pax:pax, paxLabel:pax+(pax>1?' travellers':' traveller'), date:dstr, cabin:FORM.cabin, direct:false, roundTrip:isRound };
+      agent.classList.add('open'); agent.setAttribute('aria-hidden','false');
+      aUser(msg); setTimeout(askFrom, 500);
+    });
+    updateCard();
+  })();
+
+  /* header fade only once the entry has scrolled */
+  (function(){ const cv=document.querySelector('.canvas'); if(!cv) return;
+    function upd(){ document.body.classList.toggle('scrolled', cv.scrollTop>8); }
+    cv.addEventListener('scroll', upd, {passive:true}); upd();
+  })();
 
   /* ---------- wire both composers ---------- */
   initComposer(document.getElementById('composer'),  { onSend:function(t){ openAgent(t || 'Goa this weekend, 2 of us'); } });
