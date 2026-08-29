@@ -1359,7 +1359,7 @@
   const rfClear=document.getElementById('rfClear');
   const rfCheap=document.getElementById('rfCheap');
   const rfFast=document.getElementById('rfFast');
-  const RESFILTER={ time:'any', airline:'any', sort:null };
+  const RESFILTER={ time:'any', airline:'any', cheap:false, fast:false };
   const TIME_OPTS=[['any','Any time'],['morning','Morning (before 12)'],['afternoon','Afternoon (12–5)'],['evening','Evening (after 5)']];
   function flightHour(f){ return parseInt((f.dep||'0').split(':')[0],10)||0; }
   function durMins(f){ const m=(f.dur||'').match(/(\d+)h\s*(\d+)?/); return m ? (parseInt(m[1],10)*60 + (m[2]?parseInt(m[2],10):0)) : 9999; }
@@ -1567,7 +1567,7 @@
     const w=el('div','msg agent');
     w.textContent="Done, Sukesh 🎉 I checked with my partners and negotiated "+total+" "+TRIP.dest+" deals that match what you asked for — best prices, seat included, one honest all-in price.";
     agScroll.appendChild(w); scrollToMsg(w);
-    RESFILTER.time='any'; RESFILTER.airline='any';
+    RESFILTER.time='any'; RESFILTER.airline='any'; RESFILTER.cheap=false; RESFILTER.fast=false;
     buildResults();
     addDealsCTA(total);
     openResults(true);   // instant (no slide) so the chat + CTA never flash before the list
@@ -1588,8 +1588,13 @@
       resScroll.appendChild(el('div','bhead-g','<div class="bhead">'+b.head+'</div>'+(b.sub?'<div class="bsub">'+b.sub+'</div>':'')));
       all+=b.cards.length;
       const matches=b.cards.filter(matchFilters);
-      if(RESFILTER.sort==='price') matches.sort(function(a,b){ return a.base-b.base; });
-      else if(RESFILTER.sort==='fast') matches.sort(function(a,b){ return durMins(a)-durMins(b); });
+      if(RESFILTER.cheap && RESFILTER.fast){
+        const bp=matches.slice().sort(function(a,b){ return a.base-b.base; });
+        const bd=matches.slice().sort(function(a,b){ return durMins(a)-durMins(b); });
+        const rank=new Map(); matches.forEach(function(f){ rank.set(f, bp.indexOf(f)+bd.indexOf(f)); });
+        matches.sort(function(a,b){ return rank.get(a)-rank.get(b); });
+      } else if(RESFILTER.cheap){ matches.sort(function(a,b){ return a.base-b.base; }); }
+      else if(RESFILTER.fast){ matches.sort(function(a,b){ return durMins(a)-durMins(b); }); }
       if(matches.length){
         const wrap=el('div','blist');
         matches.forEach(function(f){ wrap.appendChild(bucketCard(f)); shown++; });
@@ -1611,12 +1616,12 @@
     rfTime.classList.toggle('on', RESFILTER.time!=='any');
     rfAir.querySelector('.rf-lbl').textContent = RESFILTER.airline==='any' ? 'Airline' : RESFILTER.airline;
     rfAir.classList.toggle('on', RESFILTER.airline!=='any');
-    rfCheap.classList.toggle('on', RESFILTER.sort==='price');
-    rfFast.classList.toggle('on', RESFILTER.sort==='fast');
-    const active = RESFILTER.time!=='any' || RESFILTER.airline!=='any' || !!RESFILTER.sort;
+    rfCheap.classList.toggle('on', RESFILTER.cheap);
+    rfFast.classList.toggle('on', RESFILTER.fast);
+    const active = RESFILTER.time!=='any' || RESFILTER.airline!=='any' || RESFILTER.cheap || RESFILTER.fast;
     rfClear.hidden = !active;
   }
-  function clearFilters(){ RESFILTER.time='any'; RESFILTER.airline='any'; RESFILTER.sort=null; closeMenu(); buildResults(); }
+  function clearFilters(){ RESFILTER.time='any'; RESFILTER.airline='any'; RESFILTER.cheap=false; RESFILTER.fast=false; closeMenu(); buildResults(); }
   function activeFilterText(){ const parts=[]; if(RESFILTER.airline!=='any') parts.push(RESFILTER.airline); if(RESFILTER.time!=='any'){ const t=TIME_OPTS.find(function(o){ return o[0]===RESFILTER.time; }); parts.push(t[1].split(' (')[0].toLowerCase()); } return parts.length ? parts.join(' · ') : 'your filters'; }
   function allFlights(){ const a=[]; BUCKETS.forEach(function(b){ b.cards.forEach(function(f){ a.push(f); }); }); return a; }
   function cardByAirline(a){ let r=null; allFlights().forEach(function(f){ if(!r && f.airline===a) r=f; }); return r; }
@@ -1646,8 +1651,8 @@
   function closeMenu(){ resMenu.hidden=true; resMenu.innerHTML=''; menuOpenFor=null; rfTime.classList.remove('menu-open'); rfAir.classList.remove('menu-open'); }
   rfTime.addEventListener('click', function(e){ e.stopPropagation(); openMenu('time', rfTime); });
   rfAir.addEventListener('click', function(e){ e.stopPropagation(); openMenu('airline', rfAir); });
-  rfCheap.addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); RESFILTER.sort = RESFILTER.sort==='price'?null:'price'; haptic(10); buildResults(); });
-  rfFast.addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); RESFILTER.sort = RESFILTER.sort==='fast'?null:'fast'; haptic(10); buildResults(); });
+  rfCheap.addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); RESFILTER.cheap=!RESFILTER.cheap; haptic(10); buildResults(); });
+  rfFast.addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); RESFILTER.fast=!RESFILTER.fast; haptic(10); buildResults(); });
   rfClear.addEventListener('click', clearFilters);
   document.addEventListener('click', function(e){ if(menuOpenFor && !resMenu.contains(e.target) && !e.target.closest('.rf-chip')) closeMenu(); });
   /* composer under the flight list — type a refinement; send re-negotiates and reshows the list */
