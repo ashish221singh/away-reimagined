@@ -259,6 +259,10 @@
   .sc-or span{ font-family:var(--ui); font-size:14px; font-weight:600; color:rgba(255,255,255,.78); letter-spacing:.02em; white-space:nowrap; }
   /* frosted-glass panel — secondary to the chat composer, same purple/glass world */
   .search-card{ align-self:stretch; background:rgba(255,255,255,.08); -webkit-backdrop-filter:blur(20px) saturate(1.2); backdrop-filter:blur(20px) saturate(1.2); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:6px; box-shadow:0 10px 30px rgba(30,27,46,.12); }
+  .sc-tabs{ display:flex; gap:6px; padding:4px 4px 2px; }
+  .sc-tab{ flex:0 0 auto; padding:8px 15px; border-radius:18px; border:none; cursor:pointer; background:rgba(255,255,255,.09); color:rgba(255,255,255,.72); font-family:var(--ui); font-size:13px; font-weight:600; transition:background .2s ease, color .2s ease; }
+  .sc-tab.on{ background:#fff; color:#5A4FC4; }
+  .sc-dates.oneway::after{ display:none; }
   .sc-od{ display:flex; align-items:stretch; position:relative; margin-top:2px; }
   .sc-field{ flex:1; min-width:0; text-align:left; background:none; border:none; cursor:pointer; padding:13px 14px; border-radius:14px; display:flex; flex-direction:column; gap:3px; transition:background .15s ease; }
   .sc-field:active{ background:rgba(255,255,255,.08); }
@@ -350,6 +354,11 @@
   .who-step .who-n{ font-family:var(--ui); font-size:16px; font-weight:600; color:#1E1B2E; min-width:22px; text-align:center; }
 
   /* from city list */
+  .pk-search{ display:flex; align-items:center; gap:9px; padding:11px 13px; margin:2px 0 8px; border-radius:14px; background:#F4F1FC; }
+  .pk-search svg{ width:17px; height:17px; color:#8B7FD0; flex:0 0 auto; }
+  .pk-search-in{ flex:1; min-width:0; border:none; background:none; outline:none; font-family:var(--ui); font-size:15px; font-weight:500; color:#1E1B2E; }
+  .pk-search-in::placeholder{ color:rgba(30,27,46,.4); font-weight:400; }
+  .city-empty{ padding:26px; text-align:center; font-family:var(--ui); font-size:13.5px; color:rgba(30,27,46,.45); }
   .city-r{ display:flex; align-items:center; justify-content:space-between; width:100%; padding:14px 6px; border:none; background:none; cursor:pointer; border-bottom:1px solid rgba(30,27,46,.06); font-family:var(--ui); font-size:15px; color:#1E1B2E; text-align:left; }
   .city-r .city-c{ font-size:12.5px; font-weight:600; color:rgba(30,27,46,.4); }
   .city-r.sel{ color:#5A4FC4; font-weight:700; }
@@ -705,7 +714,21 @@
   .res-titles{ display:flex; flex-direction:column; line-height:1.18; }
   .res-title{ font-family:var(--display); font-weight:600; font-size:20px; color:#1E1B2E; }
   .res-sub{ font-family:var(--ui); font-size:12px; font-weight:600; color:#8B7FD0; margin-top:2px; }
-  .res-scroll{ padding-top:18px; padding-bottom:44px; }
+  .res-scroll{ padding-top:18px; padding-bottom:16px; }
+  /* simple composer under the flight list — taps back to chat + opens keyboard */
+  .res-compose{ flex:0 0 auto; padding:8px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .rc-bar{ display:flex; align-items:flex-end; gap:9px; padding:8px 8px 8px 16px; border-radius:26px; background:#fff; border:1px solid rgba(108,93,209,.12); box-shadow:0 6px 20px rgba(108,93,209,.14); }
+  .rc-field{ flex:1; min-width:0; border:none; background:none; outline:none; resize:none; font-family:var(--ui); font-size:15px; line-height:1.4; color:#1E1B2E; padding:9px 0; max-height:88px; overflow-y:auto; }
+  .rc-field::placeholder{ color:rgba(30,27,46,.42); }
+  .rc-mic, .rc-send{ flex:0 0 auto; width:40px; height:40px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s ease, background .2s ease; }
+  .rc-mic:active, .rc-send:active{ transform:scale(.92); }
+  .rc-mic{ background:#F3F0FC; color:#6257B0; }
+  .rc-mic .ic-stop{ display:none; }
+  .rc-mic.on{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; }
+  .rc-mic.on .ic-mic{ display:none; }
+  .rc-mic.on .ic-stop{ display:block; }
+  .rc-send{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); color:#fff; }
+  .rc-mic svg, .rc-send svg{ width:18px; height:18px; }
   .res-scroll .bhead-g{ margin:18px 2px 4px; }
   .res-scroll .bhead-g:first-child{ margin-top:6px; }
   .res-scroll .bhead{ font-family:var(--display); font-weight:600; font-size:19px; color:#1E1B2E; }
@@ -1032,6 +1055,10 @@
         <div class="sc-or"><span>or search the usual way</span></div>
 
         <div class="search-card" id="searchCard">
+          <div class="sc-tabs">
+            <button class="sc-tab on" data-tt="round" type="button">Round trip</button>
+            <button class="sc-tab" data-tt="oneway" type="button">One way</button>
+          </div>
           <div class="sc-od">
             <button class="sc-field" id="scFrom" type="button"><span class="sc-lbl">From</span><span class="sc-city" id="scFromV">Bangalore</span><span class="sc-code" id="scFromC">BLR</span></button>
             <button class="sc-swap" id="scSwap" type="button" aria-label="Swap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
@@ -1140,10 +1167,28 @@
         <span class="rf-lbl">Airline</span>
         <svg class="rf-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
+      <button class="rf-chip rf-toggle" id="rfCheap" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 12 22l-9-9V4a1 1 0 0 1 1-1h9l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.6" cy="7.6" r="1.3"/></svg>
+        <span class="rf-lbl">Lowest price</span>
+      </button>
+      <button class="rf-chip rf-toggle" id="rfFast" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z"/></svg>
+        <span class="rf-lbl">Fastest</span>
+      </button>
       <button class="rf-clear" id="rfClear" type="button" hidden>Clear</button>
     </div>
     <div class="res-menu" id="resMenu" hidden></div>
     <div class="agent-scroll res-scroll" id="resScroll"></div>
+    <div class="res-compose" id="resCompose">
+      <div class="rc-bar">
+        <textarea class="rc-field" id="rcField" rows="1" placeholder="Want to change something? Refine or ask…"></textarea>
+        <button class="rc-mic" id="rcMic" type="button" aria-label="Voice">
+          <svg class="ic-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+          <svg class="ic-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2.5"/></svg>
+        </button>
+        <button class="rc-send" id="rcSend" type="button" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg></button>
+      </div>
+    </div>
   </section>
 
   <!-- Flight detail bottom sheet -->
@@ -1312,9 +1357,12 @@
   const rfTime=document.getElementById('rfTime');
   const rfAir=document.getElementById('rfAir');
   const rfClear=document.getElementById('rfClear');
-  const RESFILTER={ time:'any', airline:'any' };
+  const rfCheap=document.getElementById('rfCheap');
+  const rfFast=document.getElementById('rfFast');
+  const RESFILTER={ time:'any', airline:'any', sort:null };
   const TIME_OPTS=[['any','Any time'],['morning','Morning (before 12)'],['afternoon','Afternoon (12–5)'],['evening','Evening (after 5)']];
   function flightHour(f){ return parseInt((f.dep||'0').split(':')[0],10)||0; }
+  function durMins(f){ const m=(f.dur||'').match(/(\d+)h\s*(\d+)?/); return m ? (parseInt(m[1],10)*60 + (m[2]?parseInt(m[2],10):0)) : 9999; }
   function matchTime(f){ const h=flightHour(f); if(RESFILTER.time==='morning') return h<12; if(RESFILTER.time==='afternoon') return h>=12&&h<17; if(RESFILTER.time==='evening') return h>=17; return true; }
   function matchAir(f){ return RESFILTER.airline==='any' || f.airline===RESFILTER.airline; }
   function matchFilters(f){ return matchTime(f) && matchAir(f); }
@@ -1540,6 +1588,8 @@
       resScroll.appendChild(el('div','bhead-g','<div class="bhead">'+b.head+'</div>'+(b.sub?'<div class="bsub">'+b.sub+'</div>':'')));
       all+=b.cards.length;
       const matches=b.cards.filter(matchFilters);
+      if(RESFILTER.sort==='price') matches.sort(function(a,b){ return a.base-b.base; });
+      else if(RESFILTER.sort==='fast') matches.sort(function(a,b){ return durMins(a)-durMins(b); });
       if(matches.length){
         const wrap=el('div','blist');
         matches.forEach(function(f){ wrap.appendChild(bucketCard(f)); shown++; });
@@ -1561,10 +1611,12 @@
     rfTime.classList.toggle('on', RESFILTER.time!=='any');
     rfAir.querySelector('.rf-lbl').textContent = RESFILTER.airline==='any' ? 'Airline' : RESFILTER.airline;
     rfAir.classList.toggle('on', RESFILTER.airline!=='any');
-    const active = RESFILTER.time!=='any' || RESFILTER.airline!=='any';
+    rfCheap.classList.toggle('on', RESFILTER.sort==='price');
+    rfFast.classList.toggle('on', RESFILTER.sort==='fast');
+    const active = RESFILTER.time!=='any' || RESFILTER.airline!=='any' || !!RESFILTER.sort;
     rfClear.hidden = !active;
   }
-  function clearFilters(){ RESFILTER.time='any'; RESFILTER.airline='any'; closeMenu(); buildResults(); }
+  function clearFilters(){ RESFILTER.time='any'; RESFILTER.airline='any'; RESFILTER.sort=null; closeMenu(); buildResults(); }
   function activeFilterText(){ const parts=[]; if(RESFILTER.airline!=='any') parts.push(RESFILTER.airline); if(RESFILTER.time!=='any'){ const t=TIME_OPTS.find(function(o){ return o[0]===RESFILTER.time; }); parts.push(t[1].split(' (')[0].toLowerCase()); } return parts.length ? parts.join(' · ') : 'your filters'; }
   function allFlights(){ const a=[]; BUCKETS.forEach(function(b){ b.cards.forEach(function(f){ a.push(f); }); }); return a; }
   function cardByAirline(a){ let r=null; allFlights().forEach(function(f){ if(!r && f.airline===a) r=f; }); return r; }
@@ -1594,8 +1646,41 @@
   function closeMenu(){ resMenu.hidden=true; resMenu.innerHTML=''; menuOpenFor=null; rfTime.classList.remove('menu-open'); rfAir.classList.remove('menu-open'); }
   rfTime.addEventListener('click', function(e){ e.stopPropagation(); openMenu('time', rfTime); });
   rfAir.addEventListener('click', function(e){ e.stopPropagation(); openMenu('airline', rfAir); });
+  rfCheap.addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); RESFILTER.sort = RESFILTER.sort==='price'?null:'price'; haptic(10); buildResults(); });
+  rfFast.addEventListener('click', function(e){ e.stopPropagation(); closeMenu(); RESFILTER.sort = RESFILTER.sort==='fast'?null:'fast'; haptic(10); buildResults(); });
   rfClear.addEventListener('click', clearFilters);
   document.addEventListener('click', function(e){ if(menuOpenFor && !resMenu.contains(e.target) && !e.target.closest('.rf-chip')) closeMenu(); });
+  /* composer under the flight list — type a refinement; send re-negotiates and reshows the list */
+  (function(){
+    const rcField=document.getElementById('rcField'), rcMic=document.getElementById('rcMic'), rcSend=document.getElementById('rcSend');
+    if(!rcField) return;
+    let rcRecog=null, rcListening=false;
+    function grow(){ rcField.style.height='auto'; rcField.style.height=Math.min(88,rcField.scrollHeight)+'px'; }
+    rcField.addEventListener('input', grow);
+    function stopVoice(){ rcListening=false; rcMic.classList.remove('on'); if(rcRecog){ try{rcRecog.stop();}catch(e){} rcRecog=null; } }
+    function mockVoice(){ const s='only morning flights, please'; const base=rcField.value?rcField.value+' ':''; let i=0; const t=setInterval(function(){ i++; rcField.value=base+s.slice(0,i); grow(); if(i>=s.length){ clearInterval(t); stopVoice(); } }, 45); }
+    function send(){
+      const text=rcField.value.trim(); if(!text){ rcField.focus(); return; }
+      if(rcListening) stopVoice();
+      rcField.value=''; grow(); closeResults(); haptic(14);
+      setTimeout(function(){
+        aUser(text);
+        botSay('On it — re-checking your best options with that.', function(){ setTimeout(startNeg, 350); });
+      }, 320);
+    }
+    rcSend.addEventListener('click', send);
+    rcField.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+    rcMic.addEventListener('click', function(){
+      if(rcListening){ stopVoice(); return; }
+      const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+      rcListening=true; rcMic.classList.add('on'); haptic(12);
+      if(SR){ rcRecog=new SR(); rcRecog.lang='en-IN'; rcRecog.interimResults=true; const base=rcField.value?rcField.value+' ':'';
+        rcRecog.onresult=function(e){ let t=''; for(let i=0;i<e.results.length;i++) t+=e.results[i][0].transcript; rcField.value=base+t; grow(); };
+        rcRecog.onerror=function(){ mockVoice(); }; rcRecog.onend=function(){ stopVoice(); };
+        try{ rcRecog.start(); }catch(e){ mockVoice(); }
+      } else { mockVoice(); }
+    });
+  })();
   function openResults(instant){
     haptic(14);
     if(instant){ results.style.transition='none'; results.classList.add('open'); void results.offsetWidth; results.style.transition=''; }
@@ -1899,7 +1984,7 @@
     const picker=document.getElementById('picker'), pkBody=document.getElementById('pkBody'), pkTitle=document.getElementById('pkTitle'), pkDone=document.getElementById('pkDone'), pkFoot=picker.querySelector('.pk-foot');
     const $=function(id){ return document.getElementById(id); };
     const scFromV=$('scFromV'), scFromC=$('scFromC'), scToV=$('scToV'), scToC=$('scToC'), scDepV=$('scDepV'), scRetV=$('scRetV'), scRet=$('scRet'), scWhoV=$('scWhoV'), scSearch=$('scSearch');
-    const FORM={ fromCode:'BLR', fromName:'Bangalore', toKey:null, toName:null, toCode:null, dep:null, ret:null, adults:1, kids:0, cabin:'Economy' };
+    const FORM={ fromCode:'BLR', fromName:'Bangalore', toKey:null, toName:null, toCode:null, dep:null, ret:null, tripType:'round', adults:1, kids:0, cabin:'Economy' };
     let pkKind=null, calFor=null, calSel=null, cityList=[], wA=1, wK=0, wCabin='Economy';
     function cmp(a,b){ return (a.y-b.y)||(a.m-b.m)||(a.d-b.d); }
     function fmtLong(dt){ return WD[new Date(dt.y,dt.m,dt.d).getDay()]+', '+dt.d+' '+MON[dt.m]; }
@@ -1909,7 +1994,9 @@
       scFromV.textContent=FORM.fromName; scFromC.textContent=FORM.fromCode;
       if(FORM.toName){ scToV.textContent=FORM.toName; setPh(scToV,false); scToC.textContent=FORM.toCode; } else { scToV.textContent='Select city'; setPh(scToV,true); scToC.textContent=''; }
       if(FORM.dep){ scDepV.textContent=fmtLong(FORM.dep); setPh(scDepV,false); } else { scDepV.textContent='Add date'; setPh(scDepV,true); }
-      if(FORM.ret){ scRetV.textContent=fmtLong(FORM.ret); setPh(scRetV,false); } else { scRetV.textContent='Add date'; setPh(scRetV,true); }
+      const dates=document.querySelector('.sc-dates');
+      if(FORM.tripType==='oneway'){ scRet.style.display='none'; dates.classList.add('oneway'); }
+      else { scRet.style.display=''; dates.classList.remove('oneway'); if(FORM.ret){ scRetV.textContent=fmtLong(FORM.ret); setPh(scRetV,false); } else { scRetV.textContent='Add date'; setPh(scRetV,true); } }
       const pax=FORM.adults+FORM.kids; scWhoV.textContent=pax+' Traveller'+(pax>1?'s':'')+' · '+FORM.cabin;
       const ok=!!(FORM.toKey && FORM.dep); scSearch.classList.toggle('ready', ok);
       if(FORM.toKey) document.getElementById('scTo').classList.remove('err');
@@ -1920,9 +2007,19 @@
     function closePicker(){ picker.classList.remove('open'); picker.setAttribute('aria-hidden','true'); pkKind=null; }
     // ---- city ----
     function buildCity(which){
-      cityList = which==='from' ? ORIGINS.map(function(c){return {name:c[0],code:c[1]};}) : DEST_KEYS.map(function(k){return {name:DEST_DB[k].city,code:DEST_DB[k].iata,key:k};});
-      pkBody.innerHTML=cityList.map(function(c,i){ const sel=which==='from'?(c.code===FORM.fromCode):(c.key===FORM.toKey); return '<button class="city-r'+(sel?' sel':'')+'" data-i="'+i+'" data-w="'+which+'" type="button"><span>'+c.name+'</span><span class="city-c">'+c.code+'</span></button>'; }).join('');
-      pkBody.querySelectorAll('.city-r').forEach(function(b){ b.addEventListener('click',function(){ const c=cityList[+b.dataset.i]; if(b.dataset.w==='from'){ FORM.fromCode=c.code; FORM.fromName=c.name; } else { FORM.toKey=c.key; FORM.toName=c.name; FORM.toCode=c.code; } haptic(10); updateCard(); closePicker(); }); });
+      const full = which==='from' ? ORIGINS.map(function(c){return {name:c[0],code:c[1]};}) : DEST_KEYS.map(function(k){return {name:DEST_DB[k].city,code:DEST_DB[k].iata,key:k};});
+      cityList = full;
+      pkBody.innerHTML='<div class="pk-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="citySearch" class="pk-search-in" type="text" placeholder="Search city or airport" autocomplete="off"></div><div class="city-list" id="cityList"></div>';
+      const listEl=document.getElementById('cityList');
+      function renderList(q){
+        const ql=(q||'').trim().toLowerCase();
+        const rows = ql ? full.filter(function(c){ return c.name.toLowerCase().indexOf(ql)>=0 || c.code.toLowerCase().indexOf(ql)>=0; }) : full;
+        listEl.innerHTML = rows.length ? rows.map(function(c){ const sel=which==='from'?(c.code===FORM.fromCode):(c.key===FORM.toKey); const idx=full.indexOf(c); return '<button class="city-r'+(sel?' sel':'')+'" data-i="'+idx+'" data-w="'+which+'" type="button"><span>'+c.name+'</span><span class="city-c">'+c.code+'</span></button>'; }).join('') : '<div class="city-empty">No matching city</div>';
+        listEl.querySelectorAll('.city-r').forEach(function(b){ b.addEventListener('click',function(){ const c=full[+b.dataset.i]; if(b.dataset.w==='from'){ FORM.fromCode=c.code; FORM.fromName=c.name; } else { FORM.toKey=c.key; FORM.toName=c.name; FORM.toCode=c.code; } haptic(10); updateCard(); closePicker(); }); });
+      }
+      renderList('');
+      const inp=document.getElementById('citySearch');
+      inp.addEventListener('input', function(){ renderList(inp.value); });
     }
     // ---- date (single select) ----
     function buildDateCal(){
@@ -1957,6 +2054,7 @@
     scRet.addEventListener('click', function(){ calFor='ret'; calSel=FORM.ret; buildDateCal(); openPicker('ret','Return date (optional)',false); });
     $('scWho').addEventListener('click', function(){ wA=FORM.adults; wK=FORM.kids; wCabin=FORM.cabin; buildWho(); openPicker('who','Travellers & class',true); });
     $('scSwap').addEventListener('click', function(){ if(!FORM.toCode) return; const of=FORM.fromCode, ofn=FORM.fromName; FORM.fromCode=FORM.toCode; FORM.fromName=FORM.toName; FORM.toCode=of; FORM.toName=ofn; FORM.toKey=codeToKey[of]||FORM.toKey; haptic(10); updateCard(); });
+    document.querySelectorAll('.sc-tab').forEach(function(t){ t.addEventListener('click',function(){ FORM.tripType=t.dataset.tt; document.querySelectorAll('.sc-tab').forEach(function(x){ x.classList.toggle('on', x===t); }); if(FORM.tripType==='oneway') FORM.ret=null; updateCard(); haptic(8); }); });
     pkDone.addEventListener('click', function(){ if(pkKind==='who'){ FORM.adults=wA; FORM.kids=wK; FORM.cabin=wCabin; haptic(10); updateCard(); closePicker(); } });
     document.getElementById('pkClose').addEventListener('click', closePicker);
     picker.querySelector('.pk-scrim').addEventListener('click', closePicker);
@@ -1971,8 +2069,8 @@
         h.classList.add('show'); haptic([28,40,28]);
         return;
       }
-      const pax=FORM.adults+FORM.kids, isRound=!!FORM.ret;
-      const dstr = isRound ? (fmtShort(FORM.dep)+' – '+fmtShort(FORM.ret)) : fmtShort(FORM.dep);
+      const pax=FORM.adults+FORM.kids, isRound=FORM.tripType==='round';
+      const dstr = (isRound && FORM.ret) ? (fmtShort(FORM.dep)+' – '+fmtShort(FORM.ret)) : fmtShort(FORM.dep);
       const msg = FORM.fromName+' to '+FORM.toName+', '+dstr+', '+pax+(pax>1?' travellers':' traveller')+', '+(isRound?'round trip':'one way')+', '+FORM.cabin.toLowerCase();
       FX.unlock(); haptic(14);
       agScroll.innerHTML=''; convoState='flow'; fromCode=FORM.fromCode;
