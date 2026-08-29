@@ -1381,6 +1381,7 @@
       buildResults();
       addDealsCTA(total);
       scrollToMsg(w);
+      setTimeout(openResults, 1100);   // auto-open the list; the message + CTA stay in chat for when the user comes back
     }, 850);
   }
   function addDealsCTA(total){
