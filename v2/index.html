@@ -362,7 +362,14 @@
     color:#fff; cursor:pointer;
   }
   .ag-back svg{ width:20px; height:20px; }
-  .ag-menu{ margin-left:auto; width:44px; height:44px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center; color:#3a3550; cursor:pointer; }
+  .ag-sound{ margin-left:auto; width:44px; height:44px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center; color:#3a3550; cursor:pointer; }
+  .ag-sound svg{ width:22px; height:22px; }
+  .ag-sound:active{ transform:scale(.9); }
+  .ag-sound .ic-off{ display:none; }
+  .ag-sound.muted{ color:rgba(58,53,80,.5); }
+  .ag-sound.muted .ic-on{ display:none; }
+  .ag-sound.muted .ic-off{ display:block; }
+  .ag-menu{ width:44px; height:44px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center; color:#3a3550; cursor:pointer; }
   .ag-menu svg{ width:26px; height:26px; }
   .ag-menu:active{ transform:scale(.9); }
   .ag-title{ font-family:var(--ui); font-size:15px; font-weight:600; color:#fff; }
@@ -952,6 +959,10 @@
       <button class="ag-back" id="agBack" type="button" aria-label="Back">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
+      <button class="ag-sound" id="agSound" type="button" aria-label="Sound on/off">
+        <svg class="ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8 8 0 0 1 0 12"/></svg>
+        <svg class="ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>
+      </button>
       <button class="ag-menu" id="agMenuBtn" type="button" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h11"/></svg>
       </button>
@@ -1444,23 +1455,47 @@
   rfAir.addEventListener('click', function(e){ e.stopPropagation(); openMenu('airline', rfAir); });
   rfClear.addEventListener('click', clearFilters);
   document.addEventListener('click', function(e){ if(menuOpenFor && !resMenu.contains(e.target) && !e.target.closest('.rf-chip')) closeMenu(); });
-  function openResults(){ results.classList.add('open'); results.setAttribute('aria-hidden','false'); resScroll.scrollTop=0; }
+  function openResults(){ haptic(14); results.classList.add('open'); results.setAttribute('aria-hidden','false'); resScroll.scrollTop=0; }
   function closeResults(){ closeMenu(); results.classList.remove('open'); results.setAttribute('aria-hidden','true'); }
   resBack.addEventListener('click', closeResults);
+  /* ---------- sound + haptics: the travel feeling ---------- */
+  const FX=(function(){
+    let ctx=null, master=null;
+    let muted=(function(){ try{ return localStorage.getItem('away_muted')==='1'; }catch(e){ return false; } })();
+    function ensure(){ if(ctx) return ctx; try{ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; ctx=new AC(); master=ctx.createGain(); master.gain.value=0.9; master.connect(ctx.destination); }catch(e){ ctx=null; } return ctx; }
+    function unlock(){ const c=ensure(); if(c && c.state==='suspended'){ try{ c.resume(); }catch(e){} } }
+    function tnow(){ return ctx?ctx.currentTime:0; }
+    function ready(){ if(muted||!ensure()) return false; if(ctx.state==='suspended'){ try{ctx.resume();}catch(e){} } return true; }
+    // a clean, bubbly "pop": quick attack, fast decay, gentle pitch drop
+    function blip(f,t,dur,peak,dropFrom){ const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(dropFrom||f,t); if(dropFrom) o.frequency.exponentialRampToValueAtTime(f,t+Math.min(0.09,dur)); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+0.006); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+0.04); }
+    function pop(prog){ if(!ready()) return; const t=tnow(); const f=360+(prog||0)*380; blip(f,t,0.13,0.2,f*1.7); }        // one pop per step, rising as it progresses
+    function finish(){ if(!ready()) return; const t=tnow(); blip(587.33,t,0.26,0.26,920); blip(1174.66,t+0.07,0.2,0.10); } // satisfying end pop
+    function success(){ if(!ready()) return; const t=tnow(); [523.25,659.25,783.99,1046.5].forEach(function(n,i){ blip(n,t+i*0.10,0.5,0.16); }); blip(1567.98,t+0.44,0.6,0.07); }
+    function setMuted(m){ muted=!!m; try{ localStorage.setItem('away_muted',muted?'1':'0'); }catch(e){} }
+    return { unlock:unlock, pop:pop, finish:finish, success:success, isMuted:function(){return muted;}, setMuted:setMuted };
+  })();
+  function haptic(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+  ['pointerdown','touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ FX.unlock(); }, {passive:true}); });
+  (function(){ const agSound=document.getElementById('agSound'); if(!agSound) return; agSound.classList.toggle('muted', FX.isMuted());
+    agSound.addEventListener('click', function(){ const m=!FX.isMuted(); FX.setMuted(m); agSound.classList.toggle('muted', m); haptic(10); if(!m) FX.unlock(); }); })();
+
   function negotiate(){
+    FX.unlock(); haptic(18);
     const card=el('div','nego');
     card.innerHTML='<div class="nego-head"><span class="nego-spin"></span><span class="nego-title">Negotiating your trip</span><span class="nego-pct">0%</span></div><div class="nego-bar"><i></i></div><div class="nego-list"></div>';
     agScroll.appendChild(card); down();
     const bar=card.querySelector('.nego-bar i'), pct=card.querySelector('.nego-pct'), list=card.querySelector('.nego-list');
-    let i=0; const stepTime=430;
+    let i=0; const stepTime=833;   // ~10s total across the 12 steps
     (function tick(){
       if(i>=STEPS.length){
         pct.textContent='100%'; bar.style.width='100%';
         card.querySelector('.nego-title').textContent='Negotiated';
         card.querySelector('.nego-spin').classList.add('done');
         list.innerHTML='<div class="nego-step done">'+okIcon+' <span>Curated your best picks</span></div>';
+        haptic([12,45,22]);
         down(); setTimeout(showFlights, 600); return;
       }
+      haptic(7);
       pct.textContent=Math.round(i/STEPS.length*100)+'%';
       bar.style.width=(i/STEPS.length*100)+'%';
       let html='';
@@ -1499,6 +1534,7 @@
     }
   }
   function openAgent(text){
+    FX.unlock(); haptic(14);
     agScroll.innerHTML=''; fromCode='BLR'; convoState='flow'; TRIP=parseTrip(text);
     agent.classList.add('open'); agent.setAttribute('aria-hidden','false');
     aUser(text); setTimeout(askFrom, 500);
@@ -1605,7 +1641,7 @@
     sheetBody.querySelector('.st-minus').addEventListener('click',function(){ if(bagBlocks>0){ bagBlocks--; val.textContent='+'+(bagBlocks*BAG_KG)+' kg'; refreshTotal(); } });
     sheetBody.querySelector('.st-plus').addEventListener('click',function(){ if(bagBlocks<BAG_MAX){ bagBlocks++; val.textContent='+'+(bagBlocks*BAG_KG)+' kg'; refreshTotal(); } });
   }
-  function openSheet(f){ cur=f; selectedSeat=INCLUDED_SEAT; bagBlocks=0; sheetBody.innerHTML=buildSheet(f); wireSheet(); refreshTotal(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
+  function openSheet(f){ haptic(12); cur=f; selectedSeat=INCLUDED_SEAT; bagBlocks=0; sheetBody.innerHTML=buildSheet(f); wireSheet(); refreshTotal(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
   function closeSheet(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
   sheet.querySelector('.sheet-close').addEventListener('click', closeSheet);
   sheet.querySelector('.sheet-scrim').addEventListener('click', closeSheet);
@@ -1662,6 +1698,7 @@
       payload.classList.add('success');
       payload.querySelector('.pay-title').textContent='Payment successful';
       payload.querySelector('.pay-sub').textContent='Taking you to your trip…';
+      FX.success(); haptic([20,55,20,55,90]);
     }, 1900);
     setTimeout(function(){
       payload.classList.remove('open'); payload.setAttribute('aria-hidden','true');
