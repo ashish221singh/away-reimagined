@@ -1132,7 +1132,7 @@
     <div class="res-filters" id="resFilters">
       <button class="rf-chip" id="rfTime" data-f="time" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <span class="rf-lbl">Time</span>
+        <span class="rf-lbl">Departure time</span>
         <svg class="rf-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <button class="rf-chip" id="rfAir" data-f="airline" type="button">
@@ -1557,7 +1557,7 @@
   }
   function updateFilterUI(shown, all){
     const tOpt=TIME_OPTS.find(function(o){ return o[0]===RESFILTER.time; });
-    rfTime.querySelector('.rf-lbl').textContent = RESFILTER.time==='any' ? 'Time' : tOpt[1].split(' (')[0];
+    rfTime.querySelector('.rf-lbl').textContent = RESFILTER.time==='any' ? 'Departure time' : tOpt[1].split(' (')[0];
     rfTime.classList.toggle('on', RESFILTER.time!=='any');
     rfAir.querySelector('.rf-lbl').textContent = RESFILTER.airline==='any' ? 'Airline' : RESFILTER.airline;
     rfAir.classList.toggle('on', RESFILTER.airline!=='any');
