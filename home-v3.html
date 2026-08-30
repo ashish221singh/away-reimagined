@@ -985,7 +985,9 @@
   .pay-load.success .pay-check path{ animation:checkDraw .42s ease .18s forwards; }
   @keyframes checkDraw{ to{ stroke-dashoffset:0; } }
   .pay-title{ font-family:var(--display); font-size:25px; font-weight:700; color:#fff; letter-spacing:.2px; }
-  .pay-sub{ font-family:var(--ui); font-size:13.5px; color:rgba(255,255,255,.72); margin-top:9px; }
+  .pay-sub{ font-family:var(--ui); font-size:13.5px; color:rgba(255,255,255,.72); margin-top:9px; min-height:19px; text-align:center; padding:0 24px; }
+  .pay-sub.flip{ animation:paySubIn .4s ease; }
+  @keyframes paySubIn{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:none;} }
 
   /* booking tab */
   .booking-view{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:84px 14px 130px; overflow-y:auto; background:#fff; }
@@ -2533,20 +2535,31 @@
   }
   function startPayment(d){
     payload.classList.remove('success');
+    const sub=payload.querySelector('.pay-sub');
     payload.querySelector('.pay-title').textContent='Processing payment';
-    payload.querySelector('.pay-sub').textContent = d.saved>0 ? ('Locking in your '+money(d.saved)+' saving…') : 'Securing your booking, one moment…';
+    // reassuring, secure-feeling messages while the payment goes through
+    const msgs=[];
+    msgs.push(d.saved>0 ? ('Locking in your '+money(d.saved)+' saving…') : 'Securing your booking…');
+    msgs.push('Your payment is encrypted and secure.');
+    msgs.push('The price you saw is the price you pay, nothing added.');
+    msgs.push('Confirming your seats with '+d.airline+'…');
+    sub.textContent=msgs[0];
+    let mi=0; const step=1150;
+    const cyc=setInterval(function(){ mi++; if(mi<msgs.length){ sub.classList.remove('flip'); void sub.offsetWidth; sub.textContent=msgs[mi]; sub.classList.add('flip'); haptic(6); } }, step);
     payload.classList.add('open'); payload.setAttribute('aria-hidden','false');
+    const total=msgs.length*step + 350;   // ~5s so every reassurance is read
     setTimeout(function(){
+      clearInterval(cyc);
       payload.classList.add('success');
       payload.querySelector('.pay-title').textContent='Payment successful';
-      payload.querySelector('.pay-sub').textContent='Taking you to your trip…';
+      sub.classList.remove('flip'); void sub.offsetWidth; sub.textContent='Taking you to your trip…'; sub.classList.add('flip');
       FX.success(); haptic([20,55,20,55,90]);
-    }, 1900);
+    }, total);
     setTimeout(function(){
       payload.classList.remove('open'); payload.setAttribute('aria-hidden','true');
       confirmBooking(d);
       setTimeout(function(){ payload.classList.remove('success'); }, 500);
-    }, 3400);
+    }, total+1500);
   }
   function confirmBooking(d){
     closeResults();
