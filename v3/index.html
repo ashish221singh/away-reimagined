@@ -1790,7 +1790,7 @@
 
     function renderIndicative(){
       foot.innerHTML=
-        '<div class="bc-bot"><div class="bc-price"><b>'+money(f.base)+'</b><span class="bc-ind">starting fare</span></div>'+
+        '<div class="bc-bot"><div class="bc-price"><b>'+money(f.base)+'</b><span class="bc-ind">fare per person</span></div>'+
         '<button class="neg-btn" type="button">Negotiate<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>';
       foot.querySelector('.neg-btn').addEventListener('click', function(e){ e.stopPropagation(); runNeg(); });
       c.classList.add('tap-neg'); c.onclick=function(){ runNeg(); };   // whole card negotiates
@@ -1798,7 +1798,7 @@
     function renderNegotiated(){
       const negPrice=f.base-f.neg;
       foot.innerHTML=
-        '<div class="bc-bot done"><div class="bc-price"><span class="bc-was">'+money(f.base)+'</span><b>'+money(negPrice)+'</b><span class="bc-ind">negotiated</span></div>'+
+        '<div class="bc-bot done"><div class="bc-price"><span class="bc-was">'+money(f.base)+'</span><b>'+money(negPrice)+'</b><span class="bc-ind">final price per person</span></div>'+
         '<div class="save-chip">You saved '+money(f.neg)+'</div></div>'+
         '<button class="book-btn" type="button">Book this flight<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button>';
       foot.querySelector('.book-btn').addEventListener('click', function(e){ e.stopPropagation(); openSheet(f); });
