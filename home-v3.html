@@ -830,19 +830,16 @@
   .sheet-scrim{ position:absolute; inset:0; background:rgba(0,0,0,.6); opacity:0; transition:opacity .32s ease; }
   .sheet-wrap.open .sheet-scrim{ opacity:1; }
   .sheet{
-    position:absolute; left:0; right:0; bottom:0;
-    display:flex; flex-direction:column; max-height:95%; min-height:70%;
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
     background:#FCFBFF;
-    border-top-left-radius:28px; border-top-right-radius:28px;
-    border-top:1px solid rgba(108,93,209,.10);
-    box-shadow:0 -24px 60px rgba(30,27,46,.28);
     transform:translateY(100%); transition:transform .36s cubic-bezier(.4,0,.2,1);
   }
   .sheet-wrap.open .sheet{ transform:translateY(0); }
-  .sheet-top{ padding:12px 16px 10px; flex:0 0 auto; }
-  .sheet-grab{ display:block; width:42px; height:4px; border-radius:3px; background:rgba(30,27,46,.16); margin:0 auto 14px; }
-  .sheet-head-row{ display:flex; align-items:center; justify-content:space-between; }
-  .sheet-title{ font-family:var(--display); font-size:22px; font-weight:700; color:#1E1B2E; letter-spacing:.2px; }
+  .sheet-top{ padding:calc(10px + env(safe-area-inset-top)) 16px 12px; flex:0 0 auto; border-bottom:1px solid rgba(30,27,46,.06); }
+  .sheet-grab{ display:none; }
+  .sheet-head-row{ display:flex; align-items:center; gap:12px; }
+  .sheet-title{ font-family:var(--display); font-size:20px; font-weight:700; color:#1E1B2E; letter-spacing:.1px; }
   .sheet-close{ width:38px; height:38px; border-radius:50%; border:none; background:#fff; color:#3a3550; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 14px rgba(108,93,209,.14), 0 1px 3px rgba(30,27,46,.06); transition:transform .14s ease, background .2s ease; }
   .sheet-close:active{ transform:scale(.92); background:#f6f3ff; }
   .sheet-close svg{ width:16px; height:16px; }
@@ -1195,6 +1192,48 @@
   .pr-actions button{ flex:1; padding:9px; border-radius:11px; font-family:var(--ui); font-size:13px; font-weight:600; cursor:pointer; }
   .pr-reset{ background:#F4F1FC; border:none; color:#5A4FC4; }
   .pr-apply{ background:linear-gradient(135deg,#7B6BEC,#6A57D6); border:none; color:#fff; }
+
+  /* ---------- travellers (trip detail) ---------- */
+  .trav-list{ display:flex; flex-direction:column; gap:9px; margin-top:2px; }
+  .trav-row{ display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; border-radius:16px; border:1px solid rgba(30,27,46,.09); background:#fff; cursor:pointer; text-align:left; transition:transform .12s ease, border-color .2s ease, background .2s ease; }
+  .trav-row:active{ transform:scale(.99); }
+  .trav-row.empty{ border-style:dashed; border-color:rgba(108,93,209,.32); background:#FBFAFF; }
+  .trav-av{ flex:0 0 auto; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--ui); font-size:14px; font-weight:700; color:#5A4FC4; background:#EEE9FA; }
+  .trav-av.add{ font-size:22px; font-weight:400; color:#6C5DD3; background:rgba(108,93,209,.10); }
+  .trav-info{ flex:1; min-width:0; display:flex; flex-direction:column; }
+  .trav-name{ font-family:var(--ui); font-size:14.5px; font-weight:600; color:#1E1B2E; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .trav-row.empty .trav-name{ color:#5A4FC4; }
+  .trav-sub{ font-family:var(--ui); font-size:12px; color:rgba(30,27,46,.5); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .trav-edit{ flex:0 0 auto; font-family:var(--ui); font-size:13px; font-weight:600; color:#6C5DD3; }
+  .trav-chev{ flex:0 0 auto; width:18px; height:18px; color:rgba(108,93,209,.5); }
+
+  /* ---------- traveller add/pick sheet ---------- */
+  .tsheet{ position:fixed; inset:0; z-index:80; visibility:hidden; }
+  .tsheet.open{ visibility:visible; }
+  .tsheet-scrim{ position:absolute; inset:0; background:rgba(20,17,30,.4); opacity:0; transition:opacity .28s ease; }
+  .tsheet.open .tsheet-scrim{ opacity:1; }
+  .tsheet-panel{ position:absolute; left:0; right:0; bottom:0; max-height:90%; display:flex; flex-direction:column; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -14px 44px rgba(30,27,46,.24); transform:translateY(100%); transition:transform .34s cubic-bezier(.22,.61,.36,1); }
+  .tsheet.open .tsheet-panel{ transform:none; }
+  .tsheet-grip{ width:38px; height:4px; border-radius:3px; background:rgba(30,27,46,.14); margin:10px auto 2px; }
+  .tsheet-head{ display:flex; align-items:center; justify-content:space-between; padding:8px 20px 12px; }
+  .tsheet-head span{ font-family:var(--ui); font-size:17px; font-weight:700; color:#1E1B2E; }
+  .tsheet-x{ width:32px; height:32px; border-radius:50%; border:none; background:#F4F2FB; color:#3a3550; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .tsheet-x svg{ width:16px; height:16px; }
+  .tsheet-body{ flex:1; overflow-y:auto; padding:2px 20px calc(18px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling:touch; }
+  .ts-lbl{ font-family:var(--ui); font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:rgba(30,27,46,.45); margin:14px 0 9px; }
+  .ts-saved{ display:flex; flex-direction:column; gap:8px; }
+  .ts-srow{ display:flex; align-items:center; gap:12px; width:100%; padding:11px 13px; border-radius:15px; border:1px solid rgba(30,27,46,.1); background:#fff; cursor:pointer; text-align:left; transition:transform .12s ease, border-color .2s ease, background .2s ease; }
+  .ts-srow:active{ transform:scale(.99); }
+  .ts-srow.sel{ border-color:#6C5DD3; background:#F6F3FF; }
+  .ts-tick{ width:19px; height:19px; color:#6C5DD3; opacity:0; flex:0 0 auto; }
+  .ts-srow.sel .ts-tick{ opacity:1; }
+  .ts-form{ display:flex; flex-direction:column; gap:10px; }
+  .ts-row2{ display:flex; gap:10px; }
+  .ts-in{ flex:1; min-width:0; padding:13px 14px; border-radius:13px; border:1px solid rgba(30,27,46,.14); background:#FBFAFF; font-family:var(--ui); font-size:14.5px; color:#1E1B2E; outline:none; transition:border-color .2s ease, background .2s ease; }
+  .ts-in:focus{ border-color:#6C5DD3; background:#fff; }
+  .ts-in::placeholder{ color:rgba(30,27,46,.4); }
+  .ts-save{ margin-top:6px; padding:14px; border-radius:14px; border:none; cursor:pointer; font-family:var(--ui); font-size:15px; font-weight:700; color:#fff; background:linear-gradient(135deg,#7B6BEC,#6A57D6); box-shadow:0 8px 20px rgba(108,93,209,.28); transition:transform .14s ease; }
+  .ts-save:active{ transform:scale(.98); }
 </style>
 </head>
 <body>
@@ -1396,12 +1435,11 @@
     <div class="sheet-scrim"></div>
     <div class="sheet">
       <div class="sheet-top">
-        <span class="sheet-grab"></span>
         <div class="sheet-head-row">
-          <span class="sheet-title">Trip Detail</span>
           <button class="sheet-close" type="button" aria-label="Close">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
           </button>
+          <span class="sheet-title">Trip detail</span>
         </div>
       </div>
       <div class="sheet-body"></div>
@@ -1416,6 +1454,16 @@
         </div>
         <button class="sheet-book" type="button">Book it</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Traveller add/pick sheet (over the trip detail page) -->
+  <div id="travSheet" class="tsheet" aria-hidden="true">
+    <div class="tsheet-scrim"></div>
+    <div class="tsheet-panel">
+      <div class="tsheet-grip"></div>
+      <div class="tsheet-head"><span id="travTitle">Add traveller</span><button class="tsheet-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div class="tsheet-body" id="travBody"></div>
     </div>
   </div>
 
@@ -2396,6 +2444,22 @@
     h+='<div class="seat-status"><span class="seat-status-txt"></span><button type="button" class="seat-reset" hidden>↺ Back to included seat</button></div>';
     return h;
   }
+  // ---------- travellers ----------
+  const peopleIcon='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.4a3.2 3.2 0 0 1 0 6.2"/><path d="M17.4 20a5.5 5.5 0 0 0-3-4.9"/></svg>';
+  let SAVED_TRAV=[
+    {first:'Sukesh', last:'Kumar', mobile:'+91 98765 43210', email:'sukesh.kumar@email.com'},
+    {first:'Priya', last:'Sharma', mobile:'+91 91234 56789', email:'priya.sharma@email.com'}
+  ];
+  let TRAVELLERS=[]; let travSlot=0;
+  function initials(t){ return ((t.first[0]||'')+(t.last[0]||'')).toUpperCase(); }
+  function travRow(t, i){
+    if(t) return '<button class="trav-row filled" data-slot="'+i+'" type="button"><span class="trav-av">'+initials(t)+'</span><span class="trav-info"><span class="trav-name">'+t.first+' '+t.last+'</span><span class="trav-sub">'+t.mobile+'</span></span><span class="trav-edit">Edit</span></button>';
+    return '<button class="trav-row empty" data-slot="'+i+'" type="button"><span class="trav-av add">+</span><span class="trav-info"><span class="trav-name">Add traveller '+(i+1)+'</span><span class="trav-sub">Name, phone and email</span></span><svg class="trav-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';
+  }
+  function travSectionHTML(){
+    return '<div class="addon"><div class="addon-title">'+peopleIcon+'<span>Travellers ('+TRIP.pax+')</span></div>'+
+      '<div class="trav-list">'+TRAVELLERS.map(function(t,i){ return travRow(t,i); }).join('')+'</div></div>';
+  }
   function buildSheet(f){
     const dest=f.dest;
     const dk=f.destKey||TRIP.destKey;
@@ -2411,6 +2475,7 @@
         '<div class="hr-side hr-right"><span class="hr-time">'+f.arr+'</span><span class="hr-code">'+f.to+'</span></div>'+
       '</div>'+
       '</div></div>';
+    h+=travSectionHTML();
     const negd=(f.negotiated===true && f.neg);
     if(negd){
       // break the saving into the same levels the live negotiation showed
@@ -2453,8 +2518,51 @@
     const val=sheetBody.querySelector('.st-val');
     sheetBody.querySelector('.st-minus').addEventListener('click',function(){ if(bagBlocks>0){ bagBlocks--; val.textContent='+'+(bagBlocks*BAG_KG)+' kg'; refreshTotal(); } });
     sheetBody.querySelector('.st-plus').addEventListener('click',function(){ if(bagBlocks<BAG_MAX){ bagBlocks++; val.textContent='+'+(bagBlocks*BAG_KG)+' kg'; refreshTotal(); } });
+    wireTravRows();
   }
-  function openSheet(f){ haptic(12); cur=f; selectedSeat=INCLUDED_SEAT; bagBlocks=0; sheetBody.innerHTML=buildSheet(f); wireSheet(); refreshTotal(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); }
+  function wireTravRows(){ sheetBody.querySelectorAll('.trav-row').forEach(function(b){ b.addEventListener('click', function(){ openTravPicker(+b.getAttribute('data-slot')); }); }); }
+  function refreshTravList(){ const list=sheetBody.querySelector('.trav-list'); if(list){ list.innerHTML=TRAVELLERS.map(function(t,i){ return travRow(t,i); }).join(''); wireTravRows(); } }
+  const travSheet=document.getElementById('travSheet');
+  const travBody=document.getElementById('travBody');
+  const travTitle=document.getElementById('travTitle');
+  function openTravPicker(slot){
+    travSlot=slot; haptic(10);
+    travTitle.textContent = TRAVELLERS[slot] ? 'Edit traveller' : 'Add traveller';
+    const chosen = TRAVELLERS[slot] ? TRAVELLERS[slot].email : null;
+    const usedElsewhere = TRAVELLERS.filter(function(t,i){ return t && i!==slot; }).map(function(t){ return t.email; });
+    const avail = SAVED_TRAV.filter(function(t){ return usedElsewhere.indexOf(t.email)<0; });
+    let h='';
+    if(avail.length){
+      h+='<div class="ts-lbl">Saved travellers</div><div class="ts-saved">';
+      avail.forEach(function(t){ const sel=(chosen===t.email); h+='<button class="ts-srow'+(sel?' sel':'')+'" data-em="'+t.email+'" type="button"><span class="trav-av">'+initials(t)+'</span><span class="trav-info"><span class="trav-name">'+t.first+' '+t.last+'</span><span class="trav-sub">'+t.mobile+'</span></span><svg class="ts-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></button>'; });
+      h+='</div>';
+    }
+    h+='<div class="ts-lbl">Add a new traveller</div>'+
+       '<div class="ts-form">'+
+         '<div class="ts-row2"><input class="ts-in" id="tvFirst" placeholder="First name" autocomplete="off"><input class="ts-in" id="tvLast" placeholder="Last name" autocomplete="off"></div>'+
+         '<input class="ts-in" id="tvMobile" placeholder="Mobile number" inputmode="tel" autocomplete="off">'+
+         '<input class="ts-in" id="tvEmail" placeholder="Email address" inputmode="email" autocomplete="off">'+
+         '<button class="ts-save" id="tvSave" type="button">Save and add</button>'+
+       '</div>';
+    travBody.innerHTML=h;
+    travBody.querySelectorAll('.ts-srow').forEach(function(b){ b.addEventListener('click', function(){ const t=SAVED_TRAV.find(function(x){ return x.email===b.getAttribute('data-em'); }); assignTraveller(slot, t); closeTravPicker(); }); });
+    travBody.querySelector('#tvSave').addEventListener('click', function(){
+      const fn=document.getElementById('tvFirst').value.trim(), ln=document.getElementById('tvLast').value.trim(),
+            mo=document.getElementById('tvMobile').value.trim(), em=document.getElementById('tvEmail').value.trim();
+      if(!fn || !ln){ document.getElementById('tvFirst').focus(); showToast('Add first and last name'); return; }
+      const t={first:fn, last:ln, mobile:mo||'Add number', email:em||(fn.toLowerCase()+'@email.com')};
+      SAVED_TRAV.push(t); assignTraveller(slot, t); closeTravPicker();
+    });
+    travSheet.classList.add('open'); travSheet.setAttribute('aria-hidden','false');
+    travBody.scrollTop=0;
+  }
+  function assignTraveller(slot, t){ TRAVELLERS[slot]=t; refreshTravList(); haptic(12); }
+  function closeTravPicker(){ travSheet.classList.remove('open'); travSheet.setAttribute('aria-hidden','true'); }
+  travSheet.querySelector('.tsheet-x').addEventListener('click', closeTravPicker);
+  travSheet.querySelector('.tsheet-scrim').addEventListener('click', closeTravPicker);
+  function openSheet(f){ haptic(12); cur=f; selectedSeat=INCLUDED_SEAT; bagBlocks=0;
+    TRAVELLERS=[]; for(let i=0;i<TRIP.pax;i++) TRAVELLERS.push(i===0?SAVED_TRAV[0]:null);   // first slot = account holder
+    sheetBody.innerHTML=buildSheet(f); wireSheet(); refreshTotal(); sheet.classList.add('open'); sheet.setAttribute('aria-hidden','false'); sheetBody.scrollTop=0; }
   function closeSheet(){ sheet.classList.remove('open'); sheet.setAttribute('aria-hidden','true'); }
   sheet.querySelector('.sheet-close').addEventListener('click', closeSheet);
   sheet.querySelector('.sheet-scrim').addEventListener('click', closeSheet);
