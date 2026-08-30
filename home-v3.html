@@ -1900,9 +1900,26 @@
   }
   function activeList(){ return showingAll ? ALLPOOL : CURATED; }
   function openList(all){
+    const wasOpen=results.classList.contains('open');
     showingAll=!!all;
     if(all){ resetFilters(); }
-    buildResults(); openResults();
+    if(wasOpen){ swapResults(all ? 'forward' : 'back'); }   // already on the list → page-change transition
+    else { buildResults(); openResults(); }
+  }
+  // slide the results content out and the new view in, so switching curated <-> all feels like a page change
+  function swapResults(dir){
+    const outX = dir==='back' ? 26 : -26, inX = dir==='back' ? -26 : 26;
+    resScroll.style.transition='opacity .15s ease, transform .2s ease';
+    resScroll.style.opacity='0'; resScroll.style.transform='translateX('+outX+'px)';
+    setTimeout(function(){
+      buildResults(); resScroll.scrollTop=0;
+      resScroll.style.transition='none';
+      resScroll.style.opacity='0'; resScroll.style.transform='translateX('+inX+'px)';
+      void resScroll.offsetWidth;
+      resScroll.style.transition='opacity .26s ease, transform .34s cubic-bezier(.22,.61,.36,1)';
+      resScroll.style.opacity='1'; resScroll.style.transform='translateX(0)';
+      setTimeout(function(){ resScroll.style.transition=''; resScroll.style.transform=''; }, 360);
+    }, 165);
   }
   function setResHeader(){
     resRoute.innerHTML=(TRIP.from||fromCode)+' <span class="rt-arrow">&#8594;</span> '+TRIP.to;
