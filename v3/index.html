@@ -2537,12 +2537,13 @@
     payload.classList.remove('success');
     const sub=payload.querySelector('.pay-sub');
     payload.querySelector('.pay-title').textContent='Processing payment';
-    // reassuring, secure-feeling messages while the payment goes through
-    const msgs=[];
-    msgs.push(d.saved>0 ? ('Locking in your '+money(d.saved)+' saving…') : 'Securing your booking…');
-    msgs.push('Your payment is encrypted and secure.');
-    msgs.push('The price you saw is the price you pay, nothing added.');
-    msgs.push('Confirming your seats with '+d.airline+'…');
+    // post-tap reassurance: payment is going through safely + the ticket is on its way
+    const msgs=[
+      'Taking your payment securely…',
+      'Confirming your seats with '+d.airline+'…',
+      'Your booking is going through…',
+      'Almost there, your ticket is on the way.'
+    ];
     sub.textContent=msgs[0];
     let mi=0; const step=1150;
     const cyc=setInterval(function(){ mi++; if(mi<msgs.length){ sub.classList.remove('flip'); void sub.offsetWidth; sub.textContent=msgs[mi]; sub.classList.add('flip'); haptic(6); } }, step);
